@@ -1,0 +1,74 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Outfit:wght@200;300;400;500;600&display=swap');
+
+@layer base {
+  :root {
+    --background: 240 20% 4%;
+    --foreground: 45 30% 88%;
+    --card: 240 18% 7%;
+    --card-foreground: 45 30% 88%;
+    --popover: 240 18% 7%;
+    --popover-foreground: 45 30% 88%;
+    --primary: 43 72% 67%;
+    --primary-foreground: 240 20% 4%;
+    --secondary: 240 15% 12%;
+    --secondary-foreground: 45 30% 75%;
+    --muted: 240 15% 12%;
+    --muted-foreground: 240 10% 45%;
+    --accent: 43 72% 67%;
+    --accent-foreground: 240 20% 4%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 15% 14%;
+    --input: 240 15% 14%;
+    --ring: 43 72% 67%;
+    --radius: 0.5rem;
+    --gold-light: #f8efc0;
+    --gold-core: #e8c97a;
+    --gold-mid: #c9a96e;
+    --gold-dark: #8b6914;
+    --ink-deep: #0d0d14;
+  }
+}
+
+@layer base {
+  * { @apply border-border; }
+  body {
+    @apply bg-ink text-foreground;
+    font-family: 'Outfit', system-ui, sans-serif;
+  }
+  h1, h2, h3 {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+  }
+}
+
+@layer utilities {
+  .text-gold { color: var(--gold-core); }
+  .text-gold-light { color: var(--gold-light); }
+  .text-gold-mid { color: var(--gold-mid); }
+  .text-gold-dark { color: var(--gold-dark); }
+  .bg-ink { background-color: var(--ink-deep); }
+  .font-display { font-family: 'Cormorant Garamond', Georgia, serif; }
+
+  .gradient-gold {
+    background: linear-gradient(135deg, var(--gold-light) 0%, var(--gold-core) 40%, var(--gold-mid) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .glow-gold {
+    box-shadow: 0 0 20px rgba(201, 169, 110, 0.15), 0 0 60px rgba(201, 169, 110, 0.05);
+  }
+
+  .card-hover {
+    @apply transition-all duration-300;
+  }
+  .card-hover:hover {
+    @apply -translate-y-0.5;
+    box-shadow: 0 8px 32px rgba(201, 169, 110, 0.1);
+  }
+}
