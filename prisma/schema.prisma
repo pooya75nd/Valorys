@@ -1,0 +1,848 @@
+// prisma/schema.prisma — VALORYS v2
+// Plateforme investissement immobilier France entière
+// Placement patrimonial + Marchand de Biens
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// ═══════════════════════════════════════════════════════════════
+// AUTH (NextAuth)
+// ═══════════════════════════════════════════════════════════════
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+  @@unique([identifier, token])
+}
+
+// ═══════════════════════════════════════════════════════════════
+// USER + ABONNEMENTS
+// ═══════════════════════════════════════════════════════════════
+
+model User {
+  id              String    @id @default(cuid())
+  name            String?
+  email           String    @unique
+  emailVerified   DateTime?
+  image           String?
+  phone           String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  stripeCustomerId String?  @unique
+
+  // Profil investisseur (optionnel, pour personnalisation IA)
+  investorProfile   InvestorProfile?
+
+  // Relations NextAuth
+  accounts          Account[]
+  sessions          Session[]
+
+  // Relations Valorys
+  subscription      UserSubscription?
+  alerts            Alert[]
+  favorites         Favorite[]
+  portfolioItems    PortfolioItem[]
+  simulations       InvestmentSimulation[]
+  mdbBilans         MdbBilan[]
+  aiChatSessions    AiChatSession[]
+  apiKeys           ApiKey[]
+  searchHistory     SearchHistory[]
+  comparisons       Comparison[]
+}
+
+enum PlanType {
+  DECOUVERTE   // Gratuit
+  INVESTISSEUR // 19€/mois
+  MARCHAND     // 49€/mois
+  PRO          // 149€/mois (cabinets CGP, multi-clients)
+}
+
+model Plan {
+  id            String   @id @default(cuid())
+  name          String
+  type          PlanType @unique
+  price         Float    // 0, 19, 49, 149
+  stripePriceId String?  @unique
+
+  // Feature flags
+  maxAlerts               Int     // -1 = illimité
+  maxSimulations          Int     // nb de simulations sauvegardables
+  maxPortfolioItems       Int     // nb de biens dans le portefeuille
+  hasMdbCalculator        Boolean @default(false)  // Calculatrice marchand de biens
+  hasFiscalComparison     Boolean @default(false)  // Comparaison régimes fiscaux
+  hasDvfAccess            Boolean @default(false)  // Accès historique DVF
+  hasAiAdvisor            Boolean @default(false)  // Agent IA conseiller
+  hasApiAccess            Boolean @default(false)  // API privée
+  hasCsvExport            Boolean @default(false)  // Export CSV/Excel
+  hasOffMarketAlerts      Boolean @default(false)  // Alertes off-market / successions
+  hasPortfolioTracking    Boolean @default(false)  // Suivi portefeuille patrimonial
+  hasWeeklyReport         Boolean @default(false)  // Journal marché hebdo IA
+  hasMultiClient          Boolean @default(false)  // Gestion multi-clients (CGP)
+  alertFrequencyHours     Int     @default(24)     // Fréquence d'alerte
+
+  createdAt DateTime @default(now())
+  subscriptions UserSubscription[]
+}
+
+model UserSubscription {
+  id                      String    @id @default(cuid())
+  userId                  String    @unique
+  planId                  String
+  stripeSubscriptionId    String?   @unique
+  stripeCurrentPeriodEnd  DateTime?
+  stripeCancelAtPeriodEnd Boolean   @default(false)
+  stripeStatus            String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  plan Plan @relation(fields: [planId], references: [id])
+}
+
+// ═══════════════════════════════════════════════════════════════
+// PROFIL INVESTISSEUR (personnalisation IA)
+// ═══════════════════════════════════════════════════════════════
+
+enum InvestorGoal {
+  CASHFLOW_IMMEDIAT    // Rente immédiate
+  CAPITALISATION       // Valorisation long terme
+  DEFICIT_FONCIER      // Optimisation fiscale déficit
+  REVENTE_COURT_TERME  // Marchand de biens
+  DIVERSIFICATION      // Diversification patrimoniale
+}
+
+enum InvestorExperience {
+  DEBUTANT    // Premier investissement
+  INTERMEDIAIRE // 1-3 biens
+  CONFIRME    // 4-10 biens
+  EXPERT      // 10+ biens / professionnel
+}
+
+model InvestorProfile {
+  id                  String             @id @default(cuid())
+  userId              String             @unique
+  goal                InvestorGoal?
+  experience          InvestorExperience?
+  budgetMin           Float?             // Budget acquisition min
+  budgetMax           Float?             // Budget acquisition max
+  apport              Float?             // Apport disponible
+  revenusMensuels     Float?             // Pour calcul crédit
+  tmi                 Int?               // Tranche marginale imposition (11,30,41,45)
+  zones               String[]           // Départements / villes ciblés (France entière)
+  propertyTypes       String[]           // Types de biens recherchés
+  minYield            Float?             // Rendement brut minimum souhaité (%)
+  minMdbMargin        Float?             // Marge MdB minimum souhaitée (%)
+  riskProfile         String?            // "prudent" | "equilibre" | "dynamique"
+  preferredRegime     String?            // Régime fiscal préféré
+  updatedAt           DateTime           @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// ═══════════════════════════════════════════════════════════════
+// LISTINGS (Annonces de vente scrapées)
+// ═══════════════════════════════════════════════════════════════
+
+enum PropertyType {
+  APPARTEMENT
+  MAISON
+  IMMEUBLE          // Immeuble de rapport
+  LOCAL_COMMERCIAL
+  TERRAIN
+  PARKING
+  LOFT
+  STUDIO
+  AUTRE
+}
+
+enum DpeRating {
+  A
+  B
+  C
+  D
+  E
+  F
+  G
+  NC // Non communiqué
+}
+
+enum Source {
+  SELOGER
+  LEBONCOIN
+  BIENICI
+  PAP
+  LOGIC_IMMO
+  ORPI
+  CENTURY21
+  LAFORET
+  ERA
+  NOTAIRES_FR
+  ENCHERES
+  AGENCE_LOCALE
+  AUTRE
+}
+
+model Listing {
+  id          String   @id @default(cuid())
+  externalId  String
+  source      Source
+  sourceUrl   String
+
+  // Localisation France entière
+  address     String?
+  city        String
+  postalCode  String
+  department  String   // "75", "69", "13", "92"...
+  region      String?  // "Île-de-France", "PACA"...
+  latitude    Float?
+  longitude   Float?
+
+  // Caractéristiques du bien
+  type        PropertyType
+  title       String
+  description String?     @db.Text
+  aiDescription String?   @db.Text  // Enrichie par Claude
+  photos      String[]
+
+  // Prix
+  price           Float    // Prix de vente affiché
+  priceNegotiated Float?   // Prix négocié estimé par IA
+  pricePerSqm     Float?   // €/m²
+
+  // Indicateurs marché (calculés vs DVF)
+  dvfMedianPricePerSqm  Float?  // Prix médian DVF zone (12 derniers mois)
+  priceVsDvf            Float?  // % au-dessus/dessous de la médiane DVF
+  dvfTransactionCount   Int?    // Nb transactions DVF utilisées pour la médiane
+
+  // Surface & disposition
+  surface     Float?
+  rooms       Int?
+  bedrooms    Int?
+  floor       Int?
+  totalFloors Int?
+  landSurface Float?   // Pour maisons / terrains
+
+  // Équipements
+  hasParking    Boolean  @default(false)
+  hasGarage     Boolean  @default(false)
+  hasBalcony    Boolean  @default(false)
+  hasTerrace    Boolean  @default(false)
+  hasCellar     Boolean  @default(false)
+  hasElevator   Boolean  @default(false)
+  hasPool       Boolean  @default(false)
+
+  // DPE
+  dpe         DpeRating?
+  ges         DpeRating?
+  dpeRenovCost Float?   // Coût estimé travaux DPE (IA)
+
+  // ── SCORING INVESTISSEUR (calculé par IA) ──────────────────
+  investScore         Int?    // 0-100 : score opportunité investissement
+  investScoreDetails  Json?   // Détail pondéré du score
+  
+  // Potentiel locatif estimé (pour calcul rendement)
+  estimatedRent       Float?  // Loyer mensuel estimé
+  estimatedYieldGross Float?  // Rendement brut estimé (%)
+  
+  // Potentiel marchand de biens estimé
+  estimatedResalePrice   Float?  // Prix de revente estimé après travaux
+  estimatedRenovCost     Float?  // Budget travaux estimé (IA + DPE)
+  estimatedMdbMarginPct  Float?  // Marge brute MdB estimée (%)
+
+  // ── DÉTECTION SPÉCIALE ─────────────────────────────────────
+  isSucessionKeyword  Boolean @default(false)  // "succession", "vente urgente"
+  isJudiciaryKeyword  Boolean @default(false)  // "saisie", "licitation"
+  isDivisionPotential Boolean @default(false)  // Potentiel de division en lots
+  isImmoRapport       Boolean @default(false)  // Immeuble de rapport
+  fraudScore          Int?                     // 0=sûr, 100=suspect
+  fraudFlags          String[]
+
+  // ── STATUT ────────────────────────────────────────────────
+  isActive    Boolean  @default(true)
+  firstSeenAt DateTime @default(now())
+  lastSeenAt  DateTime @default(now())
+  publishedAt DateTime?
+  seenOnSources String[]  // Doublons cross-sources
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  priceHistory    PriceHistory[]
+  favorites       Favorite[]
+  alertMatches    AlertMatch[]
+  simulations     InvestmentSimulation[]
+  mdbBilans       MdbBilan[]
+
+  @@unique([externalId, source])
+  @@index([city])
+  @@index([department])
+  @@index([investScore])
+  @@index([price])
+  @@index([type])
+  @@index([isActive])
+  @@index([isSucessionKeyword])
+  @@index([firstSeenAt])
+}
+
+model PriceHistory {
+  id          String   @id @default(cuid())
+  listingId   String
+  price       Float
+  recordedAt  DateTime @default(now())
+
+  listing Listing @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  @@index([listingId])
+}
+
+// ═══════════════════════════════════════════════════════════════
+// DVF — Données Valeurs Foncières (open data DGFiP)
+// ═══════════════════════════════════════════════════════════════
+
+model DvfTransaction {
+  id              String    @id @default(cuid())
+  mutationId      String    @unique  // id_mutation DVF
+  dateVente       DateTime
+  natureMutation  String    // "Vente", "Adjudication", etc.
+  
+  // Localisation
+  adresse         String?
+  codePostal      String
+  commune         String
+  department      String
+  codeInsee       String
+  latitude        Float?
+  longitude       Float?
+
+  // Bien
+  typeLocal       String    // "Appartement", "Maison", "Local industriel"...
+  surface         Float?    // m²
+  surfaceTerrain  Float?
+  nbPieces        Int?
+  
+  // Prix
+  valeurFonciere  Float     // Prix de vente réel
+  prixParM2       Float?    // Calculé
+
+  // Bâtiment
+  nombreLots       Int?
+  codeNatureVoie   String?
+
+  importedAt  DateTime @default(now())
+
+  @@index([codePostal])
+  @@index([department])
+  @@index([commune])
+  @@index([dateVente])
+  @@index([typeLocal])
+}
+
+// Agrégats DVF précalculés par zone (pour performance)
+model DvfZoneStats {
+  id              String   @id @default(cuid())
+  department      String
+  commune         String?  // null = stats département entier
+  typeLocal       String   // "Appartement" | "Maison" | "ALL"
+  period          String   // "12M" | "24M" | "60M"
+
+  medianPricePerSqm  Float
+  avgPricePerSqm     Float
+  minPricePerSqm     Float
+  maxPricePerSqm     Float
+  transactionCount   Int
+  lastTransactionDate DateTime?
+
+  updatedAt DateTime @updatedAt
+
+  @@unique([department, commune, typeLocal, period])
+  @@index([department])
+  @@index([commune])
+}
+
+// ═══════════════════════════════════════════════════════════════
+// SIMULATION INVESTISSEMENT LOCATIF
+// ═══════════════════════════════════════════════════════════════
+
+enum FiscalRegime {
+  NUE_MICRO_FONCIER      // Location nue micro-foncier (30% abatt.)
+  NUE_REEL               // Location nue régime réel
+  LMNP_MICRO_BIC         // LMNP micro-BIC (50% abatt.)
+  LMNP_REEL              // LMNP régime réel (amortissements)
+  LMP                    // LMP (Loueur Meublé Professionnel)
+  SCI_IR                 // SCI à l'IR
+  SCI_IS                 // SCI à l'IS
+  DEFICIT_FONCIER        // Déficit foncier (nue réel avec travaux)
+}
+
+model InvestmentSimulation {
+  id          String   @id @default(cuid())
+  userId      String
+  listingId   String?  // Peut être lié à une annonce ou standalone
+  name        String   // Label donné par l'user
+
+  // ── Acquisition ──────────────────────────────────────────────
+  prixAchat            Float
+  fraisNotaire         Float    // Calculés auto (7-8% ancien, 2-3% neuf)
+  fraisAgence          Float    @default(0)
+  travauxRenovation    Float    @default(0)
+  travauxAmeublement   Float    @default(0)  // Pour LMNP
+  autresFraisAcquisition Float  @default(0)
+  coutTotalAcquisition Float    // Calculé
+
+  // ── Financement ──────────────────────────────────────────────
+  apport               Float
+  montantEmprunt       Float    // Calculé
+  tauxCredit           Float    // % annuel
+  dureeCredit          Int      // mois
+  mensualiteCredit     Float?   // Calculée
+  assuranceEmprunteur  Float    @default(0.1)  // % annuel du capital
+
+  // ── Revenus locatifs ─────────────────────────────────────────
+  loyerMensuel         Float
+  chargesLocataires    Float    @default(0)
+  tauxVacanceLocative  Float    @default(5)   // % de vacance estimée
+  revenuLocatifAnnuel  Float?   // Calculé (net de vacance)
+
+  // ── Charges & dépenses ───────────────────────────────────────
+  chargesCopropriete   Float    @default(0)   // Annuel
+  taxeFonciere         Float    @default(0)   // Annuel
+  assurancePNO         Float    @default(150) // Annuel
+  fraisGestionLocative Float    @default(0)   // % ou fixe annuel
+  travaux5ans          Float    @default(0)   // Provision travaux annuels
+  autresCharges        Float    @default(0)
+
+  // ── Données fiscales ─────────────────────────────────────────
+  tmi                  Int      // 11, 30, 41 ou 45
+  revenusFiscauxN      Float    @default(0)  // Revenus imposables (hors immo)
+  regimeFiscal         FiscalRegime
+  // Pour LMNP réel : amortissements
+  valeurAmortissableImmo Float? // % de la valeur hors terrain
+  valeurAmortissableMeubles Float?
+  dureeAmortissementImmo Int?   // années (usuellement 30-40)
+  dureeAmortissementMeubles Int? // années (usuellement 5-10)
+
+  // ── Résultats calculés (JSON = plusieurs régimes comparés) ──
+  results              Json?    // { byRegime: { [FiscalRegime]: SimResult } }
+
+  // ── Hypothèses de valorisation ───────────────────────────────
+  tauxRevalorisationAnnuel Float @default(2)    // % revalorisation bien
+  horizonAns              Int    @default(10)   // Durée de l'analyse
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  listing Listing? @relation(fields: [listingId], references: [id])
+
+  @@index([userId])
+  @@index([listingId])
+}
+
+// ═══════════════════════════════════════════════════════════════
+// BILAN MARCHAND DE BIENS
+// ═══════════════════════════════════════════════════════════════
+
+// Régime TVA applicable
+enum TvaRegimeMdb {
+  SANS_TVA              // Revente sans TVA (bien > 5 ans, pas de travaux lourds)
+  TVA_SUR_MARGE         // TVA sur marge (art. 268 CGI)
+  TVA_PRIX_TOTAL        // TVA sur prix total (bien neuf ou rénové lourd)
+  TVA_CONSTRUCTION      // TVA sur livraison à soi-même (LASM)
+}
+
+enum MdbStatutJuridique {
+  SASU_IS
+  SAS_IS
+  SARL_IS
+  EURL_IS
+  EURL_IR
+  EI_IR
+  SCI_IS  // Attention : normalement interdit pour MdB
+}
+
+model MdbBilan {
+  id        String   @id @default(cuid())
+  userId    String
+  listingId String?
+  name      String   // Label : "Opération Boulogne T3 - 2026"
+
+  // ── Acquisition ──────────────────────────────────────────────
+  prixAchat                Float
+  // Frais notaire : MdB bénéficie de droits réduits (0,7% si engagement revente < 5 ans)
+  // vs 7-8% pour particulier
+  statutJuridique          MdbStatutJuridique @default(SASU_IS)
+  droitsMutationReduits    Boolean @default(true)  // true si engagement revente 5 ans
+  fraisNotairePercent      Float?  // Calculé auto selon statut
+  fraisNotaire             Float?  // Calculé
+  fraisAgenceAchat         Float   @default(0)
+  fraisBancairesOuverture  Float   @default(0)
+  fraisFinanciersDossier   Float   @default(0)
+
+  // ── Travaux ──────────────────────────────────────────────────
+  budgetTravaux            Float   @default(0)
+  typeRenovation           String  @default("legere")  // "legere" | "lourde" | "construction"
+  // Légère : TVA non récupérable, TVA sur marge possible
+  // Lourde : TVA sur prix total, TVA travaux récupérable
+  
+  // ── Portage (financement court terme) ────────────────────────
+  apport                   Float   @default(0)
+  montantPret              Float?  // Calculé
+  tauxPortage              Float   @default(10.0) // % annuel (taux bridge immobilier)
+  dureePortageMois         Int     @default(12)
+  fraisPortageTotal        Float?  // Calculé
+
+  // ── Commercialisation ────────────────────────────────────────
+  fraisAgenceVente         Float?  // % ou fixe
+  fraisAgenceVentePct      Float   @default(4.0) // % du prix de vente
+  fraisMarketing           Float   @default(0)
+
+  // ── TVA ──────────────────────────────────────────────────────
+  tvaRegime                TvaRegimeMdb @default(TVA_SUR_MARGE)
+  // TVA sur marge : [ (PV - PA) × 20% ] / 1.20
+  // TVA prix total : PV × 20% (avec déduction TVA travaux)
+  tvaCalculee              Float?  // Calculée selon régime
+
+  // ── Fiscalité (Impôt sur la plus-value) ──────────────────────
+  // IS sur bénéfice net : 15% < 42 500€, 25% au-delà
+  tauxIs                   Float   @default(25.0) // 15 ou 25
+  pmauxBeneficeBrut        Float?  // Calculé
+  impotSurBenefice         Float?  // Calculé
+
+  // ── Prix de vente cible ──────────────────────────────────────
+  prixVenteEstime          Float   // Estimé par IA (DVF + travaux)
+  prixVenteMin             Float?  // Seuil de rentabilité (calculé)
+  prixVenteCible           Float?  // Pour marge cible (calculé)
+
+  // ── Résultats ────────────────────────────────────────────────
+  // Calculés à la sauvegarde
+  prixDeRevientTotal       Float?  // Acquisition + notaire + travaux + portage + commerçialisation
+  margeAvantImpot          Float?  // PV - PrixDeRevient - TVA
+  margeApresImpot          Float?  // Marge - IS
+  margePct                 Float?  // % sur prix de vente
+  roi                      Float?  // Return on Investment sur apport
+  annualizedRoi            Float?  // ROI annualisé selon durée portage
+
+  // ── Scénarios ────────────────────────────────────────────────
+  scenarios                Json?   // { pessimiste, realiste, optimiste }
+  // Pessimiste : PV -10%, travaux +20%, durée +6 mois
+  // Optimiste  : PV +5%, travaux = budget, durée = prévue
+
+  // ── Notes ────────────────────────────────────────────────────
+  notes                    String?  @db.Text
+  aiAnalysis               String?  @db.Text  // Analyse risques par Claude
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  listing Listing? @relation(fields: [listingId], references: [id])
+
+  @@index([userId])
+  @@index([listingId])
+}
+
+// ═══════════════════════════════════════════════════════════════
+// PORTEFEUILLE PATRIMONIAL
+// ═══════════════════════════════════════════════════════════════
+
+enum PortfolioStatus {
+  EN_RECHERCHE      // Cible identifiée, pas encore achetée
+  ACQUISITION       // En cours d'achat
+  EN_TRAVAUX        // Acquis, travaux en cours
+  LOUE              // Loué, en exploitation
+  VACANT            // Vacant (entre deux locataires)
+  A_VENDRE          // Décision de revente
+  VENDU             // Opération terminée
+}
+
+model PortfolioItem {
+  id          String          @id @default(cuid())
+  userId      String
+  name        String          // "T3 Boulogne - Rue Danton"
+  status      PortfolioStatus @default(LOUE)
+  listingId   String?         // Annonce source si achetée via Valorys
+
+  // Données réelles (post-acquisition)
+  adresse     String?
+  city        String
+  department  String
+  type        PropertyType
+
+  // Acquisition réelle
+  prixAchat         Float
+  fraisAcquisition  Float    // Notaire + agence + travaux
+  dateAchat         DateTime?
+
+  // Valeur actuelle estimée
+  valeurEstimee       Float?  // Mise à jour par IA / DVF
+  valeurEstimeeAt     DateTime?
+  plusValueLatente    Float?  // Calculée
+
+  // Location
+  loyerActuel         Float?
+  loyerCC             Boolean @default(false)
+  locataireDepuisLe   DateTime?
+  prochainEcheanceBail DateTime?
+
+  // Financement
+  capitalRestantDu    Float?
+  mensualiteCredit    Float?
+  tauxCredit          Float?
+  finCredit           DateTime?
+
+  // Performance
+  rendementBrutActuel Float?
+  cashflowMensuel     Float?
+  simulationId        String?  // Lié à une simulation
+
+  surface     Float?
+  rooms       Int?
+  dpe         DpeRating?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([department])
+}
+
+// ═══════════════════════════════════════════════════════════════
+// ALERTES INVESTISSEUR
+// ═══════════════════════════════════════════════════════════════
+
+enum AlertMode {
+  LOCATIF      // Recherche placement locatif
+  MDB          // Recherche opération marchand de biens
+  BOTH         // Les deux
+}
+
+model Alert {
+  id     String    @id @default(cuid())
+  userId String
+  name   String
+  mode   AlertMode @default(BOTH)
+
+  // Critères géographiques (France entière)
+  departments  String[]  // ["75", "69", "13"] — vide = France entière
+  cities       String[]  // Villes spécifiques
+  postalCodes  String[]  // Codes postaux
+
+  // Critères bien
+  types        PropertyType[]
+  priceMin     Float?
+  priceMax     Float?
+  surfaceMin   Float?
+  surfaceMax   Float?
+  roomsMin     Int?
+
+  // Critères investissement locatif
+  minYieldGross     Float?   // Rendement brut minimum %
+  minInvestScore    Int?     // Score IA minimum
+
+  // Critères MdB
+  minMdbMarginPct   Float?   // Marge MdB minimum %
+
+  // Critères spéciaux
+  successionOnly    Boolean  @default(false)  // Alertes successions/urgences
+  immoRapportOnly   Boolean  @default(false)  // Immeubles de rapport seulement
+  dpeMax            DpeRating?
+
+  // Notification
+  emailEnabled  Boolean  @default(true)
+  smsEnabled    Boolean  @default(false)
+  isActive      Boolean  @default(true)
+  lastSentAt    DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user    User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  matches AlertMatch[]
+
+  @@index([userId])
+  @@index([isActive])
+}
+
+model AlertMatch {
+  id        String   @id @default(cuid())
+  alertId   String
+  listingId String
+  sentAt    DateTime @default(now())
+
+  alert   Alert   @relation(fields: [alertId], references: [id], onDelete: Cascade)
+  listing Listing @relation(fields: [listingId], references: [id], onDelete: Cascade)
+
+  @@unique([alertId, listingId])
+}
+
+// ═══════════════════════════════════════════════════════════════
+// FAVORIS
+// ═══════════════════════════════════════════════════════════════
+
+model Favorite {
+  id        String   @id @default(cuid())
+  userId    String
+  listingId String
+  note      String?  // Note personnelle de l'investisseur
+  createdAt DateTime @default(now())
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  listing Listing @relation(fields: [listingId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, listingId])
+  @@index([userId])
+}
+
+// ═══════════════════════════════════════════════════════════════
+// CHAT IA (Agent Conseiller Pro)
+// ═══════════════════════════════════════════════════════════════
+
+model AiChatSession {
+  id        String   @id @default(cuid())
+  userId    String
+  title     String?  // Auto-généré depuis le premier message
+  messages  Json     // Array { role, content, timestamp, metadata? }
+  context   Json?    // Profil investisseur + résultats de simulations en contexte
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@index([userId])
+}
+
+// ═══════════════════════════════════════════════════════════════
+// API KEYS (Plan Pro)
+// ═══════════════════════════════════════════════════════════════
+
+model ApiKey {
+  id            String    @id @default(cuid())
+  userId        String
+  name          String
+  keyHash       String    @unique  // SHA-256 de la clé
+  lastUsedAt    DateTime?
+  requestCount  Int       @default(0)
+  monthlyCount  Int       @default(0)
+  isActive      Boolean   @default(true)
+  createdAt     DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@index([keyHash])
+}
+
+// ═══════════════════════════════════════════════════════════════
+// DONNÉES MARCHÉ PAR ZONE
+// ═══════════════════════════════════════════════════════════════
+
+model MarketZoneData {
+  id              String   @id @default(cuid())
+  department      String
+  commune         String?  // null = stats dépt entier
+  typeLocal       String
+
+  // Prix médians calculés depuis DVF + annonces
+  medianPricePerSqm     Float
+  avgPricePerSqm        Float
+  totalListingsActive   Int    @default(0)
+  avgInvestScore        Float  @default(0)
+  avgEstimatedYield     Float? // Rendement brut moyen estimé dans la zone
+  marketTension         Int    @default(50) // 0-100
+
+  recordedAt DateTime @default(now())
+
+  @@index([department])
+  @@index([commune])
+  @@unique([department, commune, typeLocal])
+}
+
+// ═══════════════════════════════════════════════════════════════
+// JOURNAL MARCHÉ IA (hebdomadaire)
+// ═══════════════════════════════════════════════════════════════
+
+model MarketReport {
+  id        String   @id @default(cuid())
+  weekOf    DateTime
+  scope     String   // "NATIONAL" | "DEP_75" | "DEP_69" etc.
+  content   String   @db.Text
+  subject   String
+  sentCount Int      @default(0)
+  sentAt    DateTime?
+  createdAt DateTime @default(now())
+
+  @@unique([weekOf, scope])
+}
+
+// ═══════════════════════════════════════════════════════════════
+// SCRAPING LOGS
+// ═══════════════════════════════════════════════════════════════
+
+model ScrapingLog {
+  id               String    @id @default(cuid())
+  source           Source
+  status           String    // running | success | error | partial
+  listingsFound    Int       @default(0)
+  listingsNew      Int       @default(0)
+  listingsUpdated  Int       @default(0)
+  errorMessage     String?
+  durationMs       Int?
+  startedAt        DateTime  @default(now())
+  completedAt      DateTime?
+}
+
+// ═══════════════════════════════════════════════════════════════
+// DIVERS
+// ═══════════════════════════════════════════════════════════════
+
+model SearchHistory {
+  id        String   @id @default(cuid())
+  userId    String
+  query     Json
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@index([userId])
+}
+
+model Comparison {
+  id         String   @id @default(cuid())
+  userId     String
+  listingIds String[]
+  mode       String   @default("LOCATIF")  // LOCATIF | MDB
+  createdAt  DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
