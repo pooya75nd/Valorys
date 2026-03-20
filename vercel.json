@@ -1,0 +1,10 @@
+{
+  "functions": {
+    "src/app/api/cron/scrape/route.ts": {
+      "maxDuration": 300
+    },
+    "src/app/api/cron/market-report/route.ts": {
+      "maxDuration": 120
+    }
+  }
+}
