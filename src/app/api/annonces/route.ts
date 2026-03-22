@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/prisma'
 
 export const dynamic = 'force-dynamic'
 export const runtime = 'nodejs'
 
 export async function GET(req: NextRequest) {
   try {
+    const { prisma } = await import('@/lib/prisma')
     const page = Math.max(1, Number(req.nextUrl.searchParams.get('page') ?? 1))
     const pageSize = 20
 
