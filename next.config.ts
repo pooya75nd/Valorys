@@ -1,9 +1,7 @@
 import type { NextConfig } from 'next'
 
 const nextConfig: NextConfig = {
-  experimental: {
-    serverComponentsExternalPackages: ['playwright', '@prisma/client'],
-  },
+  serverExternalPackages: ['playwright', '@prisma/client'],
   images: {
     remotePatterns: [
       { protocol: 'https', hostname: '**.seloger.com' },
