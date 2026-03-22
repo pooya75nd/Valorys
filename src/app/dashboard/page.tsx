@@ -5,6 +5,8 @@ import { prisma } from '@/lib/prisma'
 import Link from 'next/link'
 import { Bell, Heart, TrendingUp, Building2, ArrowRight, Star } from 'lucide-react'
 
+export const dynamic = 'force-dynamic'
+
 export default async function DashboardPage() {
   const session = await getServerSession(authOptions)
   if (!session?.user) redirect('/login')
@@ -26,8 +28,6 @@ export default async function DashboardPage() {
   return (
     <main className="min-h-screen bg-ink-deep pt-24 pb-20 px-6">
       <div className="max-w-6xl mx-auto">
-
-        {/* Header */}
         <div className="flex items-start justify-between mb-10">
           <div>
             <p className="text-zinc-500 text-sm font-light mb-1">Bonjour,</p>
@@ -41,7 +41,6 @@ export default async function DashboardPage() {
           </div>
         </div>
 
-        {/* Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
           {[
             { icon: Bell, label: 'Alertes actives', value: alertCount, href: '/dashboard/alertes', color: 'text-blue-400' },
@@ -58,13 +57,12 @@ export default async function DashboardPage() {
           ))}
         </div>
 
-        {/* Actions rapides */}
         <div className="grid md:grid-cols-2 gap-6 mb-8">
           <div className="p-6 bg-zinc-900/50 border border-white/5 rounded-2xl">
             <h2 className="text-zinc-200 font-medium mb-4">Actions rapides</h2>
             <div className="space-y-3">
               {[
-                { label: 'Simuler un investissement locatif', href: '/simulateur', icon: TrendingUp },
+                { label: 'Simuler un investissement', href: '/simulateur', icon: TrendingUp },
                 { label: 'Créer une alerte', href: '/dashboard/alertes', icon: Bell },
                 { label: 'Voir les opportunités', href: '/opportunites', icon: Building2 },
               ].map(({ label, href, icon: Icon }) => (
@@ -80,7 +78,6 @@ export default async function DashboardPage() {
             </div>
           </div>
 
-          {/* Upgrade CTA si plan Découverte */}
           {plan === 'DECOUVERTE' && (
             <div className="p-6 rounded-2xl border border-gold-700/30 bg-gold-700/5">
               <p className="text-gold-400 font-medium mb-2">Passez à Investisseur</p>
@@ -95,7 +92,6 @@ export default async function DashboardPage() {
             </div>
           )}
         </div>
-
       </div>
     </main>
   )
