@@ -3,18 +3,16 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 
-type Props = { params: Promise<{ id: string }> }
-
 export async function DELETE(
   _req: NextRequest,
-  { params }: Props
+  context: { params: { id: string } }
 ) {
   const session = await getServerSession(authOptions)
   if (!session?.user) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
-  const { id } = await params
+  const id = context.params.id
 
   await prisma.alert.deleteMany({
     where: { id, userId: session.user.id },
@@ -24,14 +22,14 @@ export async function DELETE(
 
 export async function PATCH(
   req: NextRequest,
-  { params }: Props
+  context: { params: { id: string } }
 ) {
   const session = await getServerSession(authOptions)
   if (!session?.user) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
-  const { id } = await params
+  const id = context.params.id
   const body = await req.json()
 
   const alert = await prisma.alert.updateMany({
