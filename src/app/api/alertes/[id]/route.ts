@@ -3,16 +3,16 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 
-export async function DELETE(
-  request: Request,
-  segmentData: any
-) {
+export const dynamic = 'force-dynamic'
+
+export async function DELETE(request: Request) {
   const session = await getServerSession(authOptions)
   if (!session?.user) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
-  const id = segmentData.params.id
+  const url = new URL(request.url)
+  const id = url.pathname.split('/').pop() ?? ''
 
   await prisma.alert.deleteMany({
     where: { id, userId: session.user.id },
@@ -20,16 +20,14 @@ export async function DELETE(
   return NextResponse.json({ success: true })
 }
 
-export async function PATCH(
-  request: Request,
-  segmentData: any
-) {
+export async function PATCH(request: Request) {
   const session = await getServerSession(authOptions)
   if (!session?.user) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
-  const id = segmentData.params.id
+  const url = new URL(request.url)
+  const id = url.pathname.split('/').pop() ?? ''
   const body = await request.json()
 
   const alert = await prisma.alert.updateMany({
