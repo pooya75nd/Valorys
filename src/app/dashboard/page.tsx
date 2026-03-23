@@ -1,16 +1,31 @@
+'use client'
 export const dynamic = 'force-dynamic'
 
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
-import { redirect } from 'next/navigation'
+import { useSession } from 'next-auth/react'
+import { useRouter } from 'next/navigation'
+import { useEffect } from 'react'
 import Link from 'next/link'
 import { Bell, Heart, TrendingUp, Building2, ArrowRight, Star } from 'lucide-react'
 
-export default async function DashboardPage() {
-  const session = await getServerSession(authOptions)
-  if (!session?.user) redirect('/login')
+export default function DashboardPage() {
+  const { data: session, status } = useSession()
+  const router = useRouter()
 
-  const plan = session.user.plan ?? 'DECOUVERTE'
+  useEffect(() => {
+    if (status === 'unauthenticated') router.push('/login')
+  }, [status, router])
+
+  if (status === 'loading') {
+    return (
+      <main className="min-h-screen bg-ink-deep flex items-center justify-center">
+        <div className="text-zinc-400">Chargement...</div>
+      </main>
+    )
+  }
+
+  if (!session) return null
+
+  const plan = session.user?.plan ?? 'DECOUVERTE'
   const planLabels: Record<string, string> = {
     DECOUVERTE: 'Découverte',
     INVESTISSEUR: 'Investisseur',
@@ -26,7 +41,7 @@ export default async function DashboardPage() {
           <div>
             <p className="text-zinc-500 text-sm font-light mb-1">Bonjour,</p>
             <h1 className="font-display text-4xl text-zinc-100">
-              {session.user.name?.split(' ')[0] ?? 'Investisseur'}
+              {session.user?.name?.split(' ')[0] ?? 'Investisseur'}
             </h1>
           </div>
           <div className="flex items-center gap-2 px-3 py-1.5 border border-gold-700/40 rounded-lg bg-gold-700/10">
@@ -51,7 +66,7 @@ export default async function DashboardPage() {
           ))}
         </div>
 
-        <div className="grid md:grid-cols-2 gap-6 mb-8">
+        <div className="grid md:grid-cols-2 gap-6">
           <div className="p-6 bg-zinc-900/50 border border-white/5 rounded-2xl">
             <h2 className="text-zinc-200 font-medium mb-4">Actions rapides</h2>
             <div className="space-y-3">
@@ -76,7 +91,6 @@ export default async function DashboardPage() {
             <p className="text-gold-400 font-medium mb-2">🚀 Valorys est en ligne !</p>
             <p className="text-zinc-500 text-sm font-light mb-4 leading-relaxed">
               Le scraping, le scoring IA et les simulateurs arrivent très bientôt.
-              Passez à Investisseur pour être le premier à en profiter.
             </p>
             <Link href="/pricing"
               className="inline-flex items-center gap-2 px-5 py-2.5 bg-gold-500 hover:bg-gold-400 text-ink-deep text-sm font-medium rounded-xl transition-colors">
