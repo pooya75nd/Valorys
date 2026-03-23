@@ -1,7 +1,20 @@
-import NextAuth from 'next-auth'
-import { authOptions } from '@/lib/auth'
-
 export const dynamic = 'force-dynamic'
+export const runtime = 'nodejs'
 
-const handler = NextAuth(authOptions)
+import NextAuth from 'next-auth'
+import GoogleProvider from 'next-auth/providers/google'
+
+const handler = NextAuth({
+  providers: [
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID ?? '',
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET ?? '',
+    }),
+  ],
+  pages: {
+    signIn: '/login',
+  },
+  secret: process.env.NEXTAUTH_SECRET,
+})
+
 export { handler as GET, handler as POST }
