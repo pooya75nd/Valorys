@@ -49,7 +49,7 @@ export default function HomePage() {
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-gold-700/40 bg-gold-700/10 mb-8">
             <Zap className="w-4 h-4 text-gold-400" />
             <span className="text-xs text-gold-400 font-light tracking-widest uppercase">
-              IA • DVF RÉELLES • FRANCE ENTIÈRE
+              POWERED BY AI
             </span>
           </div>
 
@@ -61,7 +61,7 @@ export default function HomePage() {
           </h1>
 
           <p className="text-zinc-400 text-xl max-w-2xl mx-auto mb-12">
-            Valorys analyse en temps réel tous les biens en vente et vous envoie uniquement les meilleures opportunités avec scoring IA, rendement net et marge marchand de biens.
+            Valorys analyse en temps réel les meilleures opportunités avec scoring IA
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
