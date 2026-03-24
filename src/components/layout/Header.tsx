@@ -2,10 +2,12 @@
 import Link from 'next/link'
 import { useSession, signOut } from 'next-auth/react'
 import { useState } from 'react'
+import { usePathname } from 'next/navigation'
 import { Menu, X, ChevronDown, LogOut, LayoutDashboard, Bell, Heart } from 'lucide-react'
 
 export function Header() {
   const { data: session } = useSession()
+  const pathname = usePathname()           // ← Ajout important
   const [mobileOpen, setMobileOpen] = useState(false)
   const [userMenuOpen, setUserMenuOpen] = useState(false)
 
@@ -18,6 +20,9 @@ export function Header() {
 
   const plan = session?.user?.plan ?? 'DECOUVERTE'
   const badge = planBadge[plan]
+
+  // Détermine si on est sur la page Tarifs
+  const isOnPricingPage = pathname === '/pricing'
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 border-b border-white/5 bg-ink-deep/90 backdrop-blur-md">
@@ -43,14 +48,20 @@ export function Header() {
         {/* Navigation Desktop */}
         <nav className="hidden md:flex items-center gap-8 text-sm font-light tracking-wide">
           {session ? (
+            // Utilisateur connecté → tout est visible
             <>
               <Link href="/opportunites" className="text-zinc-400 hover:text-gold-400 transition-colors">Opportunités</Link>
               <Link href="/simulateur" className="text-zinc-400 hover:text-gold-400 transition-colors">Simulateur</Link>
               <Link href="/pricing" className="text-zinc-400 hover:text-gold-400 transition-colors">Tarifs</Link>
             </>
           ) : (
+            // Utilisateur NON connecté
             <>
-              <Link href="/pricing" className="text-zinc-400 hover:text-gold-400 transition-colors">Tarifs</Link>
+              {!isOnPricingPage && (
+                <Link href="/pricing" className="text-zinc-400 hover:text-gold-400 transition-colors">
+                  Tarifs
+                </Link>
+              )}
             </>
           )}
         </nav>
@@ -133,8 +144,13 @@ export function Header() {
               <Link href="/pricing" onClick={() => setMobileOpen(false)} className="text-zinc-400 hover:text-gold-400">Tarifs</Link>
             </>
           ) : (
+            // Non connecté → on cache Tarifs si on est déjà sur /pricing
             <>
-              <Link href="/pricing" onClick={() => setMobileOpen(false)} className="text-zinc-400 hover:text-gold-400">Tarifs</Link>
+              {!isOnPricingPage && (
+                <Link href="/pricing" onClick={() => setMobileOpen(false)} className="text-zinc-400 hover:text-gold-400">
+                  Tarifs
+                </Link>
+              )}
             </>
           )}
 
