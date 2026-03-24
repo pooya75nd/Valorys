@@ -21,7 +21,9 @@ export function Header() {
   const plan = session?.user?.plan ?? 'DECOUVERTE'
   const badge = planBadge[plan]
 
+  // Cache "Tarifs" quand on est sur la page /pricing et non connecté
   const isOnPricingPage = pathname === '/pricing'
+  const showPricingLink = !isOnPricingPage || !!session
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 border-b border-white/5 bg-ink-deep/90 backdrop-blur-md">
@@ -45,27 +47,26 @@ export function Header() {
           </span>
         </Link>
 
-        {/* Navigation Desktop - Tarifs au milieu */}
-        <nav className="hidden md:flex items-center gap-10 text-sm font-light tracking-wide">
+        {/* Navigation Desktop */}
+        <nav className="hidden md:flex items-center gap-8 text-sm font-light tracking-wide">
           {session ? (
             <>
               <Link href="/opportunites" className="text-zinc-400 hover:text-gold-400 transition-colors">Opportunités</Link>
-              <Link href="/pricing" className="text-zinc-400 hover:text-gold-400 transition-colors font-medium">Tarifs</Link>
               <Link href="/simulateur" className="text-zinc-400 hover:text-gold-400 transition-colors">Simulateur</Link>
+              <Link href="/pricing" className="text-zinc-400 hover:text-gold-400 transition-colors">Tarifs</Link>
             </>
           ) : (
-            // Non connecté : on affiche seulement Tarifs (au centre)
-            <Link 
-              href="/pricing" 
-              className="text-zinc-400 hover:text-gold-400 transition-colors font-medium"
-            >
-              Tarifs
-            </Link>
+            // Non connecté : on affiche Tarifs seulement si on n'est pas sur la page Tarifs
+            showPricingLink && (
+              <Link href="/pricing" className="text-zinc-400 hover:text-gold-400 transition-colors">
+                Tarifs
+              </Link>
+            )
           )}
         </nav>
 
-        {/* Actions utilisateur (à droite) */}
-        <div className="hidden md:flex items-center gap-3">
+        {/* Partie droite : Connexion + Commencer */}
+        <div className="hidden md:flex items-center gap-4">
           {session ? (
             <div className="relative">
               <button
@@ -86,23 +87,17 @@ export function Header() {
 
               {userMenuOpen && (
                 <div className="absolute right-0 top-full mt-2 w-52 bg-zinc-900 border border-white/10 rounded-xl shadow-2xl overflow-hidden z-50">
-                  <Link href="/dashboard" onClick={() => setUserMenuOpen(false)}
-                    className="flex items-center gap-3 px-4 py-3 text-sm text-zinc-300 hover:bg-white/5 hover:text-gold-400 transition-colors">
+                  <Link href="/dashboard" onClick={() => setUserMenuOpen(false)} className="flex items-center gap-3 px-4 py-3 text-sm text-zinc-300 hover:bg-white/5 hover:text-gold-400 transition-colors">
                     <LayoutDashboard className="w-4 h-4" /> Dashboard
                   </Link>
-                  <Link href="/dashboard/alertes" onClick={() => setUserMenuOpen(false)}
-                    className="flex items-center gap-3 px-4 py-3 text-sm text-zinc-300 hover:bg-white/5 hover:text-gold-400 transition-colors">
+                  <Link href="/dashboard/alertes" onClick={() => setUserMenuOpen(false)} className="flex items-center gap-3 px-4 py-3 text-sm text-zinc-300 hover:bg-white/5 hover:text-gold-400 transition-colors">
                     <Bell className="w-4 h-4" /> Mes alertes
                   </Link>
-                  <Link href="/dashboard/favoris" onClick={() => setUserMenuOpen(false)}
-                    className="flex items-center gap-3 px-4 py-3 text-sm text-zinc-300 hover:bg-white/5 hover:text-gold-400 transition-colors">
+                  <Link href="/dashboard/favoris" onClick={() => setUserMenuOpen(false)} className="flex items-center gap-3 px-4 py-3 text-sm text-zinc-300 hover:bg-white/5 hover:text-gold-400 transition-colors">
                     <Heart className="w-4 h-4" /> Favoris
                   </Link>
                   <div className="border-t border-white/5 mt-1" />
-                  <button 
-                    onClick={() => signOut()}
-                    className="flex items-center gap-3 px-4 py-3 text-sm text-zinc-500 hover:bg-white/5 hover:text-red-400 transition-colors w-full text-left"
-                  >
+                  <button onClick={() => signOut()} className="flex items-center gap-3 px-4 py-3 text-sm text-zinc-500 hover:bg-white/5 hover:text-red-400 transition-colors w-full text-left">
                     <LogOut className="w-4 h-4" /> Déconnexion
                   </button>
                 </div>
@@ -110,6 +105,12 @@ export function Header() {
             </div>
           ) : (
             <>
+              {/* "Tarifs" à côté de Connexion quand on n'est pas sur la page Tarifs */}
+              {showPricingLink && (
+                <Link href="/pricing" className="text-sm text-zinc-400 hover:text-zinc-200 transition-colors px-4 py-2">
+                  Tarifs
+                </Link>
+              )}
               <Link href="/login" className="text-sm text-zinc-400 hover:text-zinc-200 transition-colors px-4 py-2">
                 Connexion
               </Link>
@@ -138,13 +139,15 @@ export function Header() {
           {session ? (
             <>
               <Link href="/opportunites" onClick={() => setMobileOpen(false)} className="text-zinc-400 hover:text-gold-400">Opportunités</Link>
-              <Link href="/pricing" onClick={() => setMobileOpen(false)} className="text-zinc-400 hover:text-gold-400 font-medium">Tarifs</Link>
               <Link href="/simulateur" onClick={() => setMobileOpen(false)} className="text-zinc-400 hover:text-gold-400">Simulateur</Link>
+              <Link href="/pricing" onClick={() => setMobileOpen(false)} className="text-zinc-400 hover:text-gold-400">Tarifs</Link>
             </>
           ) : (
-            <Link href="/pricing" onClick={() => setMobileOpen(false)} className="text-zinc-400 hover:text-gold-400 font-medium">
-              Tarifs
-            </Link>
+            showPricingLink && (
+              <Link href="/pricing" onClick={() => setMobileOpen(false)} className="text-zinc-400 hover:text-gold-400">
+                Tarifs
+              </Link>
+            )
           )}
 
           {!session && (
