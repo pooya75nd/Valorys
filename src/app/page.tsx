@@ -40,48 +40,86 @@ export default function HomePage() {
       </header>
 
       {/* Hero Section */}
-      <section className="relative min-h-screen flex items-center justify-center pt-16">
-        <div className="absolute inset-0" style={{
-          backgroundImage: 'radial-gradient(ellipse 80% 50% at 50% 40%, rgba(201,169,110,0.08) 0%, transparent 100%)'
-        }}/>
+     <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-16">
+  
+  {/* Fond graphique luxe inspiré du logo */}
+  <div className="absolute inset-0 bg-[#0a0a0f]">
+    {/* Motif géométrique subtil inspiré du logo */}
+    <div className="absolute inset-0 opacity-20"
+         style={{
+           backgroundImage: `
+             radial-gradient(circle at 20% 30%, rgba(201, 169, 110, 0.15) 0%, transparent 50%),
+             radial-gradient(circle at 80% 70%, rgba(201, 169, 110, 0.12) 0%, transparent 50%),
+             linear-gradient(45deg, transparent 40%, rgba(201, 169, 110, 0.08) 50%, transparent 60%)
+           `,
+           backgroundSize: '120% 120%'
+         }}>
+    </div>
 
-        <div className="relative z-10 max-w-5xl mx-auto px-6 text-center">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-gold-700/40 bg-gold-700/10 mb-8">
-            <Zap className="w-4 h-4 text-gold-400" />
-            <span className="text-xs text-gold-400 font-light tracking-widest uppercase">
-              POWERED BY AI
-            </span>
-          </div>
+    {/* Lignes géométriques fines dorées (inspiré du polygone du logo) */}
+    <div className="absolute inset-0 opacity-30"
+         style={{
+           backgroundImage: `
+             linear-gradient(135deg, transparent 40%, #c9a96e 50%, transparent 60%),
+             linear-gradient(45deg, transparent 40%, #c9a96e 50%, transparent 60%)
+           `,
+           backgroundSize: '200% 200%',
+           backgroundPosition: '0% 50%'
+         }}>
+    </div>
+  </div>
 
-          <h1 className="font-display text-6xl md:text-8xl font-semibold leading-none mb-8">
-            L'intelligence qui trouve<br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-gold-300 via-amber-300 to-gold-400">
-              l'opportunité
-            </span>
-          </h1>
+  {/* Overlay sombre pour meilleure lisibilité */}
+  <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/30 to-black/70" />
 
-          <p className="text-zinc-400 text-xl max-w-2xl mx-auto mb-12">
-            Valorys analyse en temps réel les meilleures opportunités avec scoring IA
-          </p>
+  <div className="relative z-10 max-w-4xl mx-auto px-6 text-center">
+    
+    {/* Badge luxe */}
+    <div className="inline-flex items-center gap-3 px-8 py-3 rounded-full border border-gold-700/40 bg-black/50 backdrop-blur-md mb-16">
+      <span className="text-xs tracking-[4px] font-light text-gold-400 uppercase">
+        INTELLIGENCE IMMOBILIÈRE POWERED BY AI
+      </span>
+    </div>
 
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link
-              href="/login"
-              className="group flex items-center justify-center gap-3 bg-gold-500 hover:bg-gold-400 text-ink-deep font-semibold text-lg px-10 py-6 rounded-2xl transition-all"
-            >
-              Commencer gratuitement
-              <ArrowRight className="group-hover:translate-x-1 transition" />
-            </Link>
+    {/* Titre très épuré et luxueux */}
+    <h1 className="font-display text-6xl md:text-7xl lg:text-8xl font-light leading-none tracking-[-1.5px] mb-6 text-white">
+      L’opportunité<br />
+      <span className="font-semibold bg-gradient-to-r from-gold-300 via-amber-200 to-gold-400 bg-clip-text text-transparent">
+        se révèle.
+      </span>
+    </h1>
 
-            <Link
-              href="/pricing"
-              className="flex items-center justify-center gap-3 border border-white/20 hover:border-gold-400 text-zinc-300 hover:text-gold-300 px-10 py-6 rounded-2xl transition-all text-lg"
-            >
-              Voir les tarifs
-            </Link>
-          </div>
-        </div>
-      </section>
+    {/* Sous-titre minimal */}
+    <p className="text-lg md:text-xl text-zinc-400 font-light tracking-wide max-w-md mx-auto">
+      Elle se détecte.
+    </p>
+
+    {/* Boutons élégants */}
+    <div className="flex flex-col sm:flex-row gap-5 justify-center mt-20">
+      <Link 
+        href="/login"
+        className="group flex items-center justify-center gap-3 bg-gold-500 hover:bg-amber-300 text-black font-medium text-lg px-12 py-6 rounded-2xl transition-all duration-300 shadow-2xl"
+      >
+        Commencer gratuitement
+        <ArrowRight className="group-hover:translate-x-1 transition" />
+      </Link>
+
+      <Link 
+        href="/pricing"
+        className="flex items-center justify-center border border-white/40 hover:border-gold-400 text-white hover:text-gold-300 px-12 py-6 rounded-2xl transition-all text-lg font-light"
+      >
+        Voir les tarifs
+      </Link>
+    </div>
+  </div>
+
+  {/* Petit élément décoratif inspiré du logo en bas */}
+  <div className="absolute bottom-12 left-1/2 -translate-x-1/2 opacity-10">
+    <svg width="80" height="80" viewBox="0 0 96 96" fill="none">
+      <polyline points="26,30 48,70 70,30" fill="none" stroke="#c9a96e" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+  </div>
+</section>
 
       {/* Section confiance */}
       <section className="py-20 border-t border-white/5">
