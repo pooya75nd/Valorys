@@ -7,7 +7,7 @@ import { Menu, X, ChevronDown, LogOut, LayoutDashboard, Bell, Heart } from 'luci
 
 export function Header() {
   const { data: session } = useSession()
-  const pathname = usePathname()           // ← Ajout important
+  const pathname = usePathname()
   const [mobileOpen, setMobileOpen] = useState(false)
   const [userMenuOpen, setUserMenuOpen] = useState(false)
 
@@ -21,12 +21,12 @@ export function Header() {
   const plan = session?.user?.plan ?? 'DECOUVERTE'
   const badge = planBadge[plan]
 
-  // Détermine si on est sur la page Tarifs
   const isOnPricingPage = pathname === '/pricing'
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 border-b border-white/5 bg-ink-deep/90 backdrop-blur-md">
       <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+        
         {/* Logo */}
         <Link href="/" className="flex items-center gap-3 group">
           <svg width="36" height="36" viewBox="0 0 96 96" fill="none">
@@ -45,28 +45,26 @@ export function Header() {
           </span>
         </Link>
 
-        {/* Navigation Desktop */}
-        <nav className="hidden md:flex items-center gap-8 text-sm font-light tracking-wide">
+        {/* Navigation Desktop - Tarifs au milieu */}
+        <nav className="hidden md:flex items-center gap-10 text-sm font-light tracking-wide">
           {session ? (
-            // Utilisateur connecté → tout est visible
             <>
               <Link href="/opportunites" className="text-zinc-400 hover:text-gold-400 transition-colors">Opportunités</Link>
+              <Link href="/pricing" className="text-zinc-400 hover:text-gold-400 transition-colors font-medium">Tarifs</Link>
               <Link href="/simulateur" className="text-zinc-400 hover:text-gold-400 transition-colors">Simulateur</Link>
-              <Link href="/pricing" className="text-zinc-400 hover:text-gold-400 transition-colors">Tarifs</Link>
             </>
           ) : (
-            // Utilisateur NON connecté
-            <>
-              {!isOnPricingPage && (
-                <Link href="/pricing" className="text-zinc-400 hover:text-gold-400 transition-colors">
-                  Tarifs
-                </Link>
-              )}
-            </>
+            // Non connecté : on affiche seulement Tarifs (au centre)
+            <Link 
+              href="/pricing" 
+              className="text-zinc-400 hover:text-gold-400 transition-colors font-medium"
+            >
+              Tarifs
+            </Link>
           )}
         </nav>
 
-        {/* Actions utilisateur */}
+        {/* Actions utilisateur (à droite) */}
         <div className="hidden md:flex items-center gap-3">
           {session ? (
             <div className="relative">
@@ -140,25 +138,20 @@ export function Header() {
           {session ? (
             <>
               <Link href="/opportunites" onClick={() => setMobileOpen(false)} className="text-zinc-400 hover:text-gold-400">Opportunités</Link>
+              <Link href="/pricing" onClick={() => setMobileOpen(false)} className="text-zinc-400 hover:text-gold-400 font-medium">Tarifs</Link>
               <Link href="/simulateur" onClick={() => setMobileOpen(false)} className="text-zinc-400 hover:text-gold-400">Simulateur</Link>
-              <Link href="/pricing" onClick={() => setMobileOpen(false)} className="text-zinc-400 hover:text-gold-400">Tarifs</Link>
             </>
           ) : (
-            // Non connecté → on cache Tarifs si on est déjà sur /pricing
-            <>
-              {!isOnPricingPage && (
-                <Link href="/pricing" onClick={() => setMobileOpen(false)} className="text-zinc-400 hover:text-gold-400">
-                  Tarifs
-                </Link>
-              )}
-            </>
+            <Link href="/pricing" onClick={() => setMobileOpen(false)} className="text-zinc-400 hover:text-gold-400 font-medium">
+              Tarifs
+            </Link>
           )}
 
           {!session && (
             <Link 
               href="/login" 
               onClick={() => setMobileOpen(false)}
-              className="mt-2 text-center py-3 px-6 bg-gold-700/20 border border-gold-700/40 text-gold-400 rounded-lg"
+              className="mt-3 text-center py-3 px-6 bg-gold-700/20 border border-gold-700/40 text-gold-400 rounded-lg"
             >
               Commencer gratuitement
             </Link>
