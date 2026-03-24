@@ -44,7 +44,6 @@ export default function HomePage() {
   
   {/* Fond graphique luxe inspiré du logo */}
   <div className="absolute inset-0 bg-[#0a0a0f]">
-    {/* Motif géométrique subtil inspiré du logo */}
     <div className="absolute inset-0 opacity-20"
          style={{
            backgroundImage: `
@@ -56,7 +55,6 @@ export default function HomePage() {
          }}>
     </div>
 
-    {/* Lignes géométriques fines dorées (inspiré du polygone du logo) */}
     <div className="absolute inset-0 opacity-30"
          style={{
            backgroundImage: `
@@ -69,33 +67,23 @@ export default function HomePage() {
     </div>
   </div>
 
-  {/* Overlay sombre pour meilleure lisibilité */}
-  <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/30 to-black/70" />
+  {/* Overlay sombre */}
+  <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/40 to-black/80" />
 
   <div className="relative z-10 max-w-4xl mx-auto px-6 text-center">
     
-    {/* Badge luxe */}
-    <div className="inline-flex items-center gap-3 px-8 py-3 rounded-full border border-gold-700/40 bg-black/50 backdrop-blur-md mb-16">
+    {/* Badge uniquement */}
+    <div className="inline-flex items-center gap-3 px-8 py-3 rounded-full border border-gold-700/40 bg-black/50 backdrop-blur-md">
       <span className="text-xs tracking-[4px] font-light text-gold-400 uppercase">
         INTELLIGENCE IMMOBILIÈRE BOOSTÉE PAR IA
       </span>
     </div>
 
-    {/* Titre très épuré et luxueux */}
-    <h1 className="font-display text-6xl md:text-7xl lg:text-8xl font-light leading-none tracking-[-1.5px] mb-6 text-white">
-      L’opportunité<br />
-      <span className="font-semibold bg-gradient-to-r from-gold-300 via-amber-200 to-gold-400 bg-clip-text text-transparent">
-        se révèle
-      </span>
-    </h1>
+    {/* Espace vide intentionnel pour équilibre visuel */}
+    <div className="h-32 md:h-48"></div>
 
-    {/* Sous-titre minimal */}
-    <p className="text-lg md:text-xl text-zinc-400 font-light tracking-wide max-w-md mx-auto">
-      Elle se détecte
-    </p>
-
-    {/* Boutons élégants */}
-    <div className="flex flex-col sm:flex-row gap-5 justify-center mt-20">
+    {/* Boutons centrés */}
+    <div className="flex flex-col sm:flex-row gap-5 justify-center">
       <Link 
         href="/login"
         className="group flex items-center justify-center gap-3 bg-gold-500 hover:bg-amber-300 text-black font-medium text-lg px-12 py-6 rounded-2xl transition-all duration-300 shadow-2xl"
@@ -113,8 +101,8 @@ export default function HomePage() {
     </div>
   </div>
 
-  {/* Petit élément décoratif inspiré du logo en bas */}
-  <div className="absolute bottom-12 left-1/2 -translate-x-1/2 opacity-10">
+  {/* Petit élément décoratif inspiré du logo */}
+  <div className="absolute bottom-16 left-1/2 -translate-x-1/2 opacity-10">
     <svg width="80" height="80" viewBox="0 0 96 96" fill="none">
       <polyline points="26,30 48,70 70,30" fill="none" stroke="#c9a96e" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"/>
     </svg>
