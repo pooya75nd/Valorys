@@ -77,7 +77,7 @@ export default function HomePage() {
     {/* Badge luxe */}
     <div className="inline-flex items-center gap-3 px-8 py-3 rounded-full border border-gold-700/40 bg-black/50 backdrop-blur-md mb-16">
       <span className="text-xs tracking-[4px] font-light text-gold-400 uppercase">
-        INTELLIGENCE IMMOBILIÈRE POWERED BY AI
+        INTELLIGENCE IMMOBILIÈRE BOOSTÉE PAR IA
       </span>
     </div>
 
@@ -85,13 +85,13 @@ export default function HomePage() {
     <h1 className="font-display text-6xl md:text-7xl lg:text-8xl font-light leading-none tracking-[-1.5px] mb-6 text-white">
       L’opportunité<br />
       <span className="font-semibold bg-gradient-to-r from-gold-300 via-amber-200 to-gold-400 bg-clip-text text-transparent">
-        se révèle.
+        se révèle
       </span>
     </h1>
 
     {/* Sous-titre minimal */}
     <p className="text-lg md:text-xl text-zinc-400 font-light tracking-wide max-w-md mx-auto">
-      Elle se détecte.
+      Elle se détecte
     </p>
 
     {/* Boutons élégants */}
