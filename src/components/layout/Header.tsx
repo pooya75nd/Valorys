@@ -21,9 +21,9 @@ export function Header() {
   const plan = session?.user?.plan ?? 'DECOUVERTE'
   const badge = planBadge[plan]
 
-  // Cache "Tarifs" quand on est sur la page /pricing et non connecté
-  const isOnPricingPage = pathname === '/pricing'
-  const showPricingLink = !isOnPricingPage || !!session
+  // Cache le lien Tarifs quand on est sur /pricing ou /login et qu'on n'est pas connecté
+  const isPublicPage = pathname === '/pricing' || pathname === '/login'
+  const showPricingLink = !isPublicPage || !!session
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 border-b border-white/5 bg-ink-deep/90 backdrop-blur-md">
@@ -47,35 +47,26 @@ export function Header() {
           </span>
         </Link>
 
-        {/* Navigation Desktop */}
+        {/* Navigation principale (seulement pour les utilisateurs connectés) */}
         <nav className="hidden md:flex items-center gap-8 text-sm font-light tracking-wide">
-          {session ? (
+          {session && (
             <>
               <Link href="/opportunites" className="text-zinc-400 hover:text-gold-400 transition-colors">Opportunités</Link>
               <Link href="/simulateur" className="text-zinc-400 hover:text-gold-400 transition-colors">Simulateur</Link>
-              <Link href="/pricing" className="text-zinc-400 hover:text-gold-400 transition-colors">Tarifs</Link>
             </>
-          ) : (
-            // Non connecté : on affiche Tarifs seulement si on n'est pas sur la page Tarifs
-            showPricingLink && (
-              <Link href="/pricing" className="text-zinc-400 hover:text-gold-400 transition-colors">
-                Tarifs
-              </Link>
-            )
           )}
         </nav>
 
-        {/* Partie droite : Connexion + Commencer */}
+        {/* Partie droite : Tarifs + Connexion + Commencer */}
         <div className="hidden md:flex items-center gap-4">
           {session ? (
+            // Utilisateur connecté
             <div className="relative">
               <button
                 onClick={() => setUserMenuOpen(!userMenuOpen)}
                 className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-white/10 hover:border-gold-700/50 transition-all"
               >
-                {session.user?.image && (
-                  <img src={session.user.image} alt="" className="w-6 h-6 rounded-full" />
-                )}
+                {session.user?.image && <img src={session.user.image} alt="" className="w-6 h-6 rounded-full" />}
                 <span className="text-sm text-zinc-300 max-w-[120px] truncate">
                   {session.user?.name?.split(' ')[0]}
                 </span>
@@ -104,8 +95,8 @@ export function Header() {
               )}
             </div>
           ) : (
+            // Utilisateur NON connecté
             <>
-              {/* "Tarifs" à côté de Connexion quand on n'est pas sur la page Tarifs */}
               {showPricingLink && (
                 <Link href="/pricing" className="text-sm text-zinc-400 hover:text-zinc-200 transition-colors px-4 py-2">
                   Tarifs
@@ -140,7 +131,6 @@ export function Header() {
             <>
               <Link href="/opportunites" onClick={() => setMobileOpen(false)} className="text-zinc-400 hover:text-gold-400">Opportunités</Link>
               <Link href="/simulateur" onClick={() => setMobileOpen(false)} className="text-zinc-400 hover:text-gold-400">Simulateur</Link>
-              <Link href="/pricing" onClick={() => setMobileOpen(false)} className="text-zinc-400 hover:text-gold-400">Tarifs</Link>
             </>
           ) : (
             showPricingLink && (
