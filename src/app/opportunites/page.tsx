@@ -1,9 +1,31 @@
 'use client'
 import Sidebar from '@/components/Sidebar'
 import Link from 'next/link'
-import { ArrowRight, Filter, Search, Star } from 'lucide-react'
+import { ArrowRight, Search, Filter, X } from 'lucide-react'
+import { useState } from 'react'
 
 export default function OpportunitesPage() {
+  const [searchTerm, setSearchTerm] = useState('')
+  const [scoreMin, setScoreMin] = useState(70)
+  const [rendementMin, setRendementMin] = useState(6)
+  const [budgetMax, setBudgetMax] = useState(300000)
+
+  // Données fictives pour le moment (on les remplacera plus tard par de vraies données)
+  const opportunites = [
+    { id: 1, ville: "Paris 11ème", surface: "62 m²", prix: 184000, score: 91, rendement: 8.7, marge: 51000, decote: 18 },
+    { id: 2, ville: "Lyon 3ème", surface: "78 m²", prix: 245000, score: 87, rendement: 7.9, marge: 68000, decote: 14 },
+    { id: 3, ville: "Marseille 6ème", surface: "55 m²", prix: 152000, score: 94, rendement: 9.2, marge: 39000, decote: 22 },
+    { id: 4, ville: "Bordeaux Centre", surface: "71 m²", prix: 219000, score: 82, rendement: 7.4, marge: 45000, decote: 11 },
+    { id: 5, ville: "Lille Centre", surface: "68 m²", prix: 178000, score: 89, rendement: 8.1, marge: 47000, decote: 16 },
+  ]
+
+  const filteredOpportunites = opportunites.filter(opp => 
+    opp.ville.toLowerCase().includes(searchTerm.toLowerCase()) &&
+    opp.score >= scoreMin &&
+    opp.rendement >= rendementMin &&
+    opp.prix <= budgetMax
+  )
+
   return (
     <div className="flex min-h-screen bg-ink-deep">
       <Sidebar />
@@ -12,90 +34,118 @@ export default function OpportunitesPage() {
         <div className="max-w-7xl mx-auto">
           
           {/* En-tête */}
-          <div className="flex flex-col md:flex-row md:items-center justify-between mb-10">
-            <div>
-              <h1 className="font-display text-4xl text-white tracking-tight">Opportunités détectées</h1>
-              <p className="text-zinc-400 mt-2">Voici toutes les affaires analysées par l’IA aujourd’hui</p>
-            </div>
+          <div className="mb-10">
+            <h1 className="font-display text-4xl text-white tracking-tight">Opportunités détectées</h1>
+            <p className="text-zinc-400 mt-2">Filtrez et explorez les meilleures affaires analysées par l’IA</p>
+          </div>
 
-            <div className="flex items-center gap-4 mt-6 md:mt-0">
-              <div className="relative w-80">
-                <Search className="absolute left-4 top-3 w-4 h-4 text-zinc-500" />
+          {/* Barre de recherche + filtres */}
+          <div className="bg-zinc-900/70 border border-white/5 rounded-3xl p-6 mb-10">
+            <div className="flex flex-col md:flex-row gap-6">
+              {/* Recherche */}
+              <div className="flex-1 relative">
+                <Search className="absolute left-5 top-4 w-5 h-5 text-zinc-500" />
                 <input
                   type="text"
-                  placeholder="Rechercher par ville, code postal..."
-                  className="w-full bg-zinc-900 border border-white/10 pl-11 py-3 rounded-2xl text-sm focus:outline-none focus:border-gold-700/50"
+                  placeholder="Rechercher par ville, arrondissement..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full bg-zinc-950 border border-white/10 pl-14 py-4 rounded-2xl focus:outline-none focus:border-gold-600 text-white"
                 />
               </div>
 
-              <button className="flex items-center gap-2 px-5 py-3 bg-zinc-900 border border-white/10 rounded-2xl hover:border-gold-700/50 transition-all">
-                <Filter className="w-4 h-4" />
-                <span className="text-sm">Filtres</span>
-              </button>
+              {/* Filtres rapides */}
+              <div className="flex flex-wrap gap-4">
+                <div>
+                  <label className="text-xs text-zinc-500 block mb-1">Score minimum</label>
+                  <input 
+                    type="range" 
+                    min="60" 
+                    max="100" 
+                    value={scoreMin} 
+                    onChange={(e) => setScoreMin(Number(e.target.value))}
+                    className="accent-gold-400"
+                  />
+                  <span className="text-xs text-gold-400 ml-2">{scoreMin}</span>
+                </div>
+
+                <div>
+                  <label className="text-xs text-zinc-500 block mb-1">Rendement min (%)</label>
+                  <input 
+                    type="range" 
+                    min="5" 
+                    max="12" 
+                    step="0.1"
+                    value={rendementMin} 
+                    onChange={(e) => setRendementMin(Number(e.target.value))}
+                    className="accent-gold-400"
+                  />
+                  <span className="text-xs text-gold-400 ml-2">{rendementMin}%</span>
+                </div>
+
+                <div>
+                  <label className="text-xs text-zinc-500 block mb-1">Budget max</label>
+                  <select 
+                    value={budgetMax} 
+                    onChange={(e) => setBudgetMax(Number(e.target.value))}
+                    className="bg-zinc-950 border border-white/10 rounded-2xl px-5 py-3 text-white"
+                  >
+                    <option value={200000}>200 000 €</option>
+                    <option value={300000}>300 000 €</option>
+                    <option value={500000}>500 000 €</option>
+                    <option value={1000000}>1 000 000 €</option>
+                  </select>
+                </div>
+              </div>
             </div>
           </div>
 
-          {/* Compteur + Tri */}
-          <div className="flex justify-between items-center mb-8 text-sm text-zinc-400">
-            <p>28 opportunités trouvées aujourd’hui</p>
-            <div className="flex items-center gap-4">
-              <span>Trier par :</span>
-              <select className="bg-transparent border border-white/10 rounded-xl px-4 py-2 text-white focus:outline-none">
-                <option>Score IA (descendant)</option>
-                <option>Rendement net</option>
-                <option>Marge MdB</option>
-                <option>Prix le plus bas</option>
-              </select>
-            </div>
+          {/* Résultats */}
+          <div className="flex justify-between items-center mb-6 text-sm text-zinc-400">
+            <p>{filteredOpportunites.length} opportunités correspondent à vos critères</p>
           </div>
 
-          {/* Liste des opportunités */}
           <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-8">
-            {[1, 2, 3, 4, 5, 6].map((i) => (
-              <div key={i} className="bg-zinc-900/70 border border-white/5 rounded-3xl overflow-hidden hover:border-gold-700/40 transition-all group">
-                
-                {/* Image placeholder */}
-                <div className="h-52 bg-zinc-800 relative">
-                  <div className="absolute top-4 right-4 bg-black/70 text-emerald-400 text-xs font-medium px-3 py-1 rounded-full">
-                    Score 91
-                  </div>
-                  <div className="absolute bottom-4 left-4 bg-black/70 text-xs px-3 py-1 rounded-full flex items-center gap-1">
-                    <Star className="w-3 h-3 text-gold-400" />
-                    <span className="text-gold-400">Décote -18%</span>
+            {filteredOpportunites.map((opp) => (
+              <div key={opp.id} className="bg-zinc-900/70 border border-white/5 rounded-3xl overflow-hidden hover:border-gold-700/40 transition-all">
+                <div className="h-52 bg-zinc-800 relative flex items-center justify-center">
+                  <div className="text-7xl opacity-10">🏠</div>
+                  <div className="absolute top-5 right-5 bg-emerald-500 text-black text-xs font-semibold px-4 py-1.5 rounded-2xl">
+                    {opp.score}
                   </div>
                 </div>
 
-                <div className="p-6">
-                  <div className="flex justify-between mb-4">
+                <div className="p-7">
+                  <p className="font-medium text-white">{opp.ville} • {opp.surface}</p>
+                  <p className="text-3xl font-semibold text-white mt-2">{opp.prix.toLocaleString()} €</p>
+
+                  <div className="mt-6 grid grid-cols-2 gap-y-4 text-sm">
                     <div>
-                      <p className="font-medium text-white">Paris 11ème • 3 pièces</p>
-                      <p className="text-2xl font-semibold text-white mt-1">184 000 €</p>
+                      <span className="text-zinc-500 text-xs block">Rendement net</span>
+                      <span className="text-emerald-400 font-medium">{opp.rendement} %</span>
                     </div>
-                    <div className="text-right">
-                      <p className="text-emerald-400 font-medium">8,7 %</p>
-                      <p className="text-xs text-zinc-500">rendement net</p>
+                    <div>
+                      <span className="text-zinc-500 text-xs block">Marge MdB</span>
+                      <span className="text-gold-400 font-medium">{opp.marge.toLocaleString()} €</span>
                     </div>
                   </div>
 
-                  <div className="flex justify-between text-sm mb-6">
-                    <div className="text-zinc-400">Marge MdB estimée</div>
-                    <div className="text-gold-400 font-medium">51 000 €</div>
-                  </div>
-
-                  <Link href={`/opportunites/${i}`} 
-                    className="block w-full py-4 text-center border border-gold-700/50 hover:bg-gold-700/10 rounded-2xl text-sm transition-all group-hover:border-gold-400">
-                    Voir l’analyse détaillée
+                  <Link 
+                    href={`/opportunites/${opp.id}`}
+                    className="mt-8 block w-full py-4 text-center border border-gold-700/50 hover:bg-gold-700/10 rounded-2xl text-sm font-medium transition-all"
+                  >
+                    Voir l’analyse complète
                   </Link>
                 </div>
               </div>
             ))}
           </div>
 
-          {/* Message temporaire */}
-          <div className="mt-16 text-center text-zinc-500 text-sm">
-            Le système de scraping et d’analyse IA est en cours de finalisation.<br />
-            De nouvelles opportunités seront ajoutées quotidiennement.
-          </div>
+          {filteredOpportunites.length === 0 && (
+            <div className="text-center py-20 text-zinc-500">
+              Aucune opportunité ne correspond à vos filtres actuels.
+            </div>
+          )}
 
         </div>
       </main>
