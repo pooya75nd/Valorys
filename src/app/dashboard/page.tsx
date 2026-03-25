@@ -33,7 +33,7 @@ export default function DashboardPage() {
       <main className="flex-1 lg:ml-72 pt-24 pb-20 px-6 lg:px-10">
         <div className="max-w-7xl mx-auto">
           
-          {/* En-tête épuré */}
+          {/* En-tête */}
           <div className="flex flex-col md:flex-row md:items-end justify-between mb-12">
             <div>
               <p className="text-zinc-500 text-sm font-light">Bonjour,</p>
@@ -47,18 +47,18 @@ export default function DashboardPage() {
                 <Clock className="w-4 h-4" />
                 <span>Aujourd’hui • 25 mars 2026</span>
               </div>
-              <div className="px-4 py-1.5 bg-gold-700/10 border border-gold-700/30 rounded-2xl text-gold-400 text-xs font-medium">
+              <div className="px-5 py-2 bg-gold-700/10 border border-gold-700/30 rounded-2xl text-gold-400 text-xs font-medium">
                 {session.user?.plan ?? 'DECOUVERTE'}
               </div>
             </div>
           </div>
 
-          {/* Section principale : Opportunités détectées par l’IA */}
-          <div className="mb-12">
+          {/* Opportunités détectées par l’IA - Section principale */}
+          <div className="mb-16">
             <div className="flex items-center justify-between mb-8">
               <div>
                 <h2 className="text-3xl font-medium text-white">Opportunités détectées par l’IA</h2>
-                <p className="text-zinc-400 mt-1">Voici les meilleures affaires identifiées aujourd’hui</p>
+                <p className="text-zinc-400 mt-1">Les meilleures affaires identifiées aujourd’hui</p>
               </div>
               <Link 
                 href="/opportunites" 
@@ -69,41 +69,58 @@ export default function DashboardPage() {
               </Link>
             </div>
 
-            {/* Cartes Opportunités */}
+            {/* Cartes améliorées */}
             <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-8">
               {[1, 2, 3].map((i) => (
-                <div key={i} className="group bg-zinc-900/70 border border-white/5 rounded-3xl overflow-hidden hover:border-gold-700/40 transition-all duration-300">
-                  <div className="h-48 bg-zinc-800 relative">
-                    <div className="absolute top-4 right-4 px-3 py-1 bg-black/70 text-xs text-emerald-400 rounded-full font-medium">
+                <div 
+                  key={i} 
+                  className="group bg-zinc-900/70 border border-white/5 rounded-3xl overflow-hidden hover:border-gold-700/40 transition-all duration-300"
+                >
+                  {/* Image / Zone visuelle */}
+                  <div className="h-52 bg-zinc-800 relative flex items-center justify-center">
+                    <div className="text-zinc-700 text-6xl">🏠</div>
+                    
+                    {/* Score badge */}
+                    <div className="absolute top-5 right-5 bg-emerald-500/90 text-black text-xs font-semibold px-4 py-1.5 rounded-2xl">
                       Score 91
                     </div>
+
+                    {/* Décote */}
+                    <div className="absolute bottom-5 left-5 bg-black/70 px-3 py-1 rounded-xl text-xs flex items-center gap-1">
+                      <span className="text-emerald-400">↓ 18%</span>
+                      <span className="text-zinc-400">décote</span>
+                    </div>
                   </div>
-                  
-                  <div className="p-6">
-                    <div className="flex justify-between items-start mb-4">
+
+                  <div className="p-7">
+                    <div className="mb-5">
+                      <p className="font-medium text-white">Paris 11ème • 62 m² • 3 pièces</p>
+                      <p className="text-3xl font-semibold text-white mt-2">184 000 €</p>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-y-4 text-sm border-t border-white/10 pt-5">
                       <div>
-                        <p className="font-medium text-white">Paris 11ème • 65 m²</p>
-                        <p className="text-2xl font-semibold text-white mt-1">184 000 €</p>
+                        <span className="text-zinc-500 block">Rendement net</span>
+                        <span className="text-emerald-400 font-medium">8,7 %</span>
                       </div>
-                      <div className="text-right text-xs text-zinc-500">
-                        Décote<br />
-                        <span className="text-emerald-400 font-medium">-18%</span>
+                      <div>
+                        <span className="text-zinc-500 block">Marge MdB</span>
+                        <span className="text-gold-400 font-medium">51 000 €</span>
+                      </div>
+                      <div>
+                        <span className="text-zinc-500 block">Prix/m²</span>
+                        <span className="text-white">2 968 €</span>
+                      </div>
+                      <div>
+                        <span className="text-zinc-500 block">Potentiel travaux</span>
+                        <span className="text-amber-400">25 000 €</span>
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-4 text-sm">
-                      <div>
-                        <span className="text-zinc-500">Rendement net</span>
-                        <p className="text-emerald-400 font-medium">8,7 %</p>
-                      </div>
-                      <div>
-                        <span className="text-zinc-500">Marge MdB</span>
-                        <p className="text-gold-400 font-medium">51 000 €</p>
-                      </div>
-                    </div>
-
-                    <Link href={`/opportunites/${i}`} 
-                      className="mt-6 block w-full py-4 text-center border border-gold-700/50 hover:bg-gold-700/10 rounded-2xl text-sm transition-colors">
+                    <Link 
+                      href={`/opportunites/${i}`}
+                      className="mt-8 block w-full py-4 text-center border border-gold-700/50 hover:bg-gold-700/10 rounded-2xl text-sm font-medium transition-all group-hover:border-gold-400"
+                    >
                       Voir l’analyse complète
                     </Link>
                   </div>
@@ -112,10 +129,10 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          {/* Message si pas encore de vraies données */}
-          <div className="text-center py-12 text-zinc-500 text-sm">
-            Le scraping et l’analyse IA sont en cours de mise en place.<br />
-            Les premières vraies opportunités arriveront très bientôt.
+          {/* Message temporaire */}
+          <div className="text-center text-zinc-500 text-sm py-8">
+            Le scraping en temps réel et l’analyse IA approfondie sont en cours de déploiement.<br />
+            De nouvelles opportunités seront ajoutées quotidiennement.
           </div>
 
         </div>
