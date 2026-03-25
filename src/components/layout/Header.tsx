@@ -21,7 +21,7 @@ export function Header() {
   const plan = session?.user?.plan ?? 'DECOUVERTE'
   const badge = planBadge[plan]
 
-  // Cache le lien Tarifs quand on est sur /pricing ou /login et qu'on n'est pas connecté
+  // Cache "Tarifs" quand on est sur /pricing ou /login (non connecté)
   const isPublicPage = pathname === '/pricing' || pathname === '/login'
   const showPricingLink = !isPublicPage || !!session
 
@@ -47,26 +47,33 @@ export function Header() {
           </span>
         </Link>
 
-        {/* Navigation principale (seulement pour les utilisateurs connectés) */}
+        {/* Navigation Desktop - On enlève Opportunités et Simulateur */}
         <nav className="hidden md:flex items-center gap-8 text-sm font-light tracking-wide">
-          {session && (
-            <>
-              <Link href="/opportunites" className="text-zinc-400 hover:text-gold-400 transition-colors">Opportunités</Link>
-              <Link href="/simulateur" className="text-zinc-400 hover:text-gold-400 transition-colors">Simulateur</Link>
-            </>
+          {session ? (
+            // Connecté → on ne met rien ici (tout est dans la sidebar)
+            <></>
+          ) : (
+            // Non connecté → on affiche seulement Tarifs si pas sur la page pricing
+            showPricingLink && (
+              <Link href="/pricing" className="text-zinc-400 hover:text-gold-400 transition-colors">
+                Tarifs
+              </Link>
+            )
           )}
         </nav>
 
-        {/* Partie droite : Tarifs + Connexion + Commencer */}
+        {/* Partie droite */}
         <div className="hidden md:flex items-center gap-4">
           {session ? (
-            // Utilisateur connecté
+            // Menu utilisateur connecté
             <div className="relative">
               <button
                 onClick={() => setUserMenuOpen(!userMenuOpen)}
                 className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-white/10 hover:border-gold-700/50 transition-all"
               >
-                {session.user?.image && <img src={session.user.image} alt="" className="w-6 h-6 rounded-full" />}
+                {session.user?.image && (
+                  <img src={session.user.image} alt="" className="w-6 h-6 rounded-full" />
+                )}
                 <span className="text-sm text-zinc-300 max-w-[120px] truncate">
                   {session.user?.name?.split(' ')[0]}
                 </span>
@@ -78,24 +85,30 @@ export function Header() {
 
               {userMenuOpen && (
                 <div className="absolute right-0 top-full mt-2 w-52 bg-zinc-900 border border-white/10 rounded-xl shadow-2xl overflow-hidden z-50">
-                  <Link href="/dashboard" onClick={() => setUserMenuOpen(false)} className="flex items-center gap-3 px-4 py-3 text-sm text-zinc-300 hover:bg-white/5 hover:text-gold-400 transition-colors">
+                  <Link href="/dashboard" onClick={() => setUserMenuOpen(false)}
+                    className="flex items-center gap-3 px-4 py-3 text-sm text-zinc-300 hover:bg-white/5 hover:text-gold-400 transition-colors">
                     <LayoutDashboard className="w-4 h-4" /> Dashboard
                   </Link>
-                  <Link href="/dashboard/alertes" onClick={() => setUserMenuOpen(false)} className="flex items-center gap-3 px-4 py-3 text-sm text-zinc-300 hover:bg-white/5 hover:text-gold-400 transition-colors">
+                  <Link href="/dashboard/alertes" onClick={() => setUserMenuOpen(false)}
+                    className="flex items-center gap-3 px-4 py-3 text-sm text-zinc-300 hover:bg-white/5 hover:text-gold-400 transition-colors">
                     <Bell className="w-4 h-4" /> Mes alertes
                   </Link>
-                  <Link href="/dashboard/favoris" onClick={() => setUserMenuOpen(false)} className="flex items-center gap-3 px-4 py-3 text-sm text-zinc-300 hover:bg-white/5 hover:text-gold-400 transition-colors">
+                  <Link href="/dashboard/favoris" onClick={() => setUserMenuOpen(false)}
+                    className="flex items-center gap-3 px-4 py-3 text-sm text-zinc-300 hover:bg-white/5 hover:text-gold-400 transition-colors">
                     <Heart className="w-4 h-4" /> Favoris
                   </Link>
                   <div className="border-t border-white/5 mt-1" />
-                  <button onClick={() => signOut()} className="flex items-center gap-3 px-4 py-3 text-sm text-zinc-500 hover:bg-white/5 hover:text-red-400 transition-colors w-full text-left">
+                  <button 
+                    onClick={() => signOut()}
+                    className="flex items-center gap-3 px-4 py-3 text-sm text-zinc-500 hover:bg-white/5 hover:text-red-400 transition-colors w-full text-left"
+                  >
                     <LogOut className="w-4 h-4" /> Déconnexion
                   </button>
                 </div>
               )}
             </div>
           ) : (
-            // Utilisateur NON connecté
+            // Non connecté
             <>
               {showPricingLink && (
                 <Link href="/pricing" className="text-sm text-zinc-400 hover:text-zinc-200 transition-colors px-4 py-2">
@@ -129,8 +142,9 @@ export function Header() {
         <div className="md:hidden border-t border-white/5 bg-ink-deep px-6 py-6 flex flex-col gap-5 text-sm">
           {session ? (
             <>
-              <Link href="/opportunites" onClick={() => setMobileOpen(false)} className="text-zinc-400 hover:text-gold-400">Opportunités</Link>
-              <Link href="/simulateur" onClick={() => setMobileOpen(false)} className="text-zinc-400 hover:text-gold-400">Simulateur</Link>
+              <Link href="/dashboard" onClick={() => setMobileOpen(false)} className="text-zinc-400 hover:text-gold-400">Dashboard</Link>
+              <Link href="/dashboard/alertes" onClick={() => setMobileOpen(false)} className="text-zinc-400 hover:text-gold-400">Mes alertes</Link>
+              <Link href="/dashboard/favoris" onClick={() => setMobileOpen(false)} className="text-zinc-400 hover:text-gold-400">Favoris</Link>
             </>
           ) : (
             showPricingLink && (
