@@ -42,8 +42,8 @@ export default function DashboardPage() {
               </h1>
             </div>
 
-            <div className="flex items-center gap-4 mt-6 md:mt-0 text-sm text-zinc-500 dark:text-zinc-400">
-              <div className="flex items-center gap-2">
+            <div className="flex items-center gap-4 mt-6 md:mt-0">
+              <div className="flex items-center gap-2 text-sm text-zinc-500 dark:text-zinc-400">
                 <Clock className="w-4 h-4" />
                 <span>Aujourd’hui • 25 mars 2026</span>
               </div>
@@ -64,7 +64,7 @@ export default function DashboardPage() {
             {[1, 2, 3].map((i) => (
               <div 
                 key={i} 
-                className="group bg-white dark:bg-zinc-900/70 border border-zinc-200 dark:border-white/5 rounded-3xl overflow-hidden hover:border-amber-600 dark:hover:border-gold-700/40 transition-all duration-300"
+                className="group bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-white/5 rounded-3xl overflow-hidden hover:border-amber-600 dark:hover:border-gold-700/40 transition-all duration-300 shadow-sm dark:shadow-none"
               >
                 <div className="h-52 bg-zinc-100 dark:bg-zinc-800 relative flex items-center justify-center">
                   <div className="text-7xl opacity-10">🏠</div>
