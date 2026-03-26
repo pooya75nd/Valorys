@@ -3,14 +3,32 @@ export const dynamic = 'force-dynamic'
 
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import Sidebar from '@/components/Sidebar'
 import Link from 'next/link'
-import { ArrowRight, Clock, Star } from 'lucide-react'
+import { ArrowRight, Clock, Star, Heart } from 'lucide-react'
 
 export default function DashboardPage() {
   const { data: session, status } = useSession()
   const router = useRouter()
+  const [favoris, setFavoris] = useState<number[]>([])
+
+  // Charger les favoris depuis localStorage
+  useEffect(() => {
+    const saved = localStorage.getItem('favoris')
+    if (saved) setFavoris(JSON.parse(saved))
+  }, [])
+
+  const toggleFavori = (id: number) => {
+    let newFavoris: number[]
+    if (favoris.includes(id)) {
+      newFavoris = favoris.filter(f => f !== id)
+    } else {
+      newFavoris = [...favoris, id]
+    }
+    setFavoris(newFavoris)
+    localStorage.setItem('favoris', JSON.stringify(newFavoris))
+  }
 
   useEffect(() => {
     if (status === 'unauthenticated') router.push('/login')
@@ -42,8 +60,8 @@ export default function DashboardPage() {
               </h1>
             </div>
 
-            <div className="flex items-center gap-4 mt-6 md:mt-0">
-              <div className="flex items-center gap-2 text-sm text-zinc-500 dark:text-zinc-400">
+            <div className="flex items-center gap-4 mt-6 md:mt-0 text-sm text-zinc-500 dark:text-zinc-400">
+              <div className="flex items-center gap-2">
                 <Clock className="w-4 h-4" />
                 <span>Aujourd’hui • 25 mars 2026</span>
               </div>
@@ -53,51 +71,59 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          {/* Titre principal */}
           <div className="mb-10">
             <h2 className="text-3xl font-medium text-zinc-900 dark:text-white">Opportunités détectées par l’IA</h2>
             <p className="text-zinc-500 dark:text-zinc-400 mt-2">Les meilleures affaires identifiées aujourd’hui</p>
           </div>
 
-          {/* Cartes Opportunités */}
           <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-8">
-            {[1, 2, 3].map((i) => (
-              <div 
-                key={i} 
-                className="group bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-white/5 rounded-3xl overflow-hidden hover:border-amber-600 dark:hover:border-gold-700/40 transition-all duration-300 shadow-sm dark:shadow-none"
-              >
-                <div className="h-52 bg-zinc-100 dark:bg-zinc-800 relative flex items-center justify-center">
-                  <div className="text-7xl opacity-10">🏠</div>
-                  
-                  <div className="absolute top-5 right-5 bg-emerald-500 text-white text-xs font-semibold px-4 py-1.5 rounded-2xl">
-                    91
-                  </div>
-                </div>
-
-                <div className="p-7">
-                  <p className="font-medium text-zinc-900 dark:text-white">Paris 11ème • 62 m² • 3 pièces</p>
-                  <p className="text-3xl font-semibold text-zinc-900 dark:text-white mt-2">184 000 €</p>
-
-                  <div className="mt-6 grid grid-cols-2 gap-6 text-sm">
-                    <div>
-                      <span className="text-zinc-500 dark:text-zinc-400 text-xs block">Rendement net</span>
-                      <span className="text-emerald-600 dark:text-emerald-400 font-medium">8,7 %</span>
+            {[1, 2, 3].map((i) => {
+              const isFavori = favoris.includes(i)
+              return (
+                <div 
+                  key={i} 
+                  className="group bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-white/5 rounded-3xl overflow-hidden hover:border-amber-600 dark:hover:border-gold-700/40 transition-all"
+                >
+                  <div className="h-52 bg-zinc-100 dark:bg-zinc-800 relative flex items-center justify-center">
+                    <div className="text-7xl opacity-10">🏠</div>
+                    
+                    <div className="absolute top-5 right-5 bg-emerald-500 text-white text-xs font-semibold px-4 py-1.5 rounded-2xl">
+                      91
                     </div>
-                    <div>
-                      <span className="text-zinc-500 dark:text-zinc-400 text-xs block">Marge MdB</span>
-                      <span className="text-amber-600 dark:text-gold-400 font-medium">51 000 €</span>
-                    </div>
+
+                    <button
+                      onClick={() => toggleFavori(i)}
+                      className="absolute top-5 left-5 p-2.5 bg-white/80 dark:bg-black/70 rounded-full hover:bg-rose-100 dark:hover:bg-rose-900/50 transition-all"
+                    >
+                      <Heart className={`w-5 h-5 transition-colors ${isFavori ? 'text-rose-500 fill-current' : 'text-zinc-400 dark:text-zinc-500'}`} />
+                    </button>
                   </div>
 
-                  <Link 
-                    href={`/opportunites/${i}`}
-                    className="mt-8 block w-full py-4 text-center border border-amber-600/30 dark:border-gold-700/50 hover:bg-amber-50 dark:hover:bg-gold-700/10 rounded-2xl text-sm font-medium transition-all"
-                  >
-                    Voir l’analyse complète
-                  </Link>
+                  <div className="p-7">
+                    <p className="font-medium text-zinc-900 dark:text-white">Paris 11ème • 62 m² • 3 pièces</p>
+                    <p className="text-3xl font-semibold text-zinc-900 dark:text-white mt-2">184 000 €</p>
+
+                    <div className="mt-6 grid grid-cols-2 gap-6 text-sm">
+                      <div>
+                        <span className="text-zinc-500 dark:text-zinc-400 text-xs block">Rendement net</span>
+                        <span className="text-emerald-600 dark:text-emerald-400 font-medium">8,7 %</span>
+                      </div>
+                      <div>
+                        <span className="text-zinc-500 dark:text-zinc-400 text-xs block">Marge MdB</span>
+                        <span className="text-amber-600 dark:text-gold-400 font-medium">51 000 €</span>
+                      </div>
+                    </div>
+
+                    <Link 
+                      href={`/opportunites/${i}`}
+                      className="mt-8 block w-full py-4 text-center border border-amber-600/30 dark:border-gold-700/50 hover:bg-amber-50 dark:hover:bg-gold-700/10 rounded-2xl text-sm font-medium transition-all"
+                    >
+                      Voir l’analyse complète
+                    </Link>
+                  </div>
                 </div>
-              </div>
-            ))}
+              )
+            })}
           </div>
 
         </div>
