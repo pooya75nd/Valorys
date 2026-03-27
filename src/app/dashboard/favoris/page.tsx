@@ -11,7 +11,8 @@ export default function FavorisPage() {
     const saved = localStorage.getItem('favoris')
     if (saved) {
       try {
-        setFavoris(JSON.parse(saved))
+        const parsed = JSON.parse(saved)
+        setFavoris(Array.isArray(parsed) ? parsed : [])
       } catch (e) {
         console.error("Erreur chargement favoris", e)
         setFavoris([])
@@ -19,7 +20,6 @@ export default function FavorisPage() {
     }
   }, [])
 
-  // Suppression par index (plus fiable pour l'instant)
   const removeFavori = (index: number) => {
     const updated = favoris.filter((_, i) => i !== index)
     setFavoris(updated)
@@ -94,7 +94,7 @@ export default function FavorisPage() {
                     </div>
 
                     <Link 
-                      href={`/opportunites/${bien.id || ''}`}
+                      href={`/opportunites/${bien.id || index}`}
                       className="mt-8 block w-full py-4 text-center border border-amber-600/30 dark:border-gold-700/50 hover:bg-amber-50 dark:hover:bg-gold-700/10 rounded-2xl text-sm font-medium transition-all"
                     >
                       Voir l’analyse complète
