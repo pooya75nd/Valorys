@@ -7,22 +7,20 @@ import { useState, useEffect } from 'react'
 export default function FavorisPage() {
   const [favoris, setFavoris] = useState<any[]>([])
 
-  // Chargement des favoris
   useEffect(() => {
     const saved = localStorage.getItem('favoris')
     if (saved) {
       try {
         setFavoris(JSON.parse(saved))
       } catch (e) {
-        console.error("Erreur parsing favoris", e)
+        console.error("Erreur de chargement des favoris", e)
         setFavoris([])
       }
     }
   }, [])
 
-  // Fonction pour supprimer un seul favori
-  const removeFavori = (id: number) => {
-    const updatedFavoris = favoris.filter(item => item.id !== id)
+  const removeFavori = (idToRemove: number) => {
+    const updatedFavoris = favoris.filter(item => item.id !== idToRemove)
     setFavoris(updatedFavoris)
     localStorage.setItem('favoris', JSON.stringify(updatedFavoris))
   }
@@ -47,9 +45,9 @@ export default function FavorisPage() {
 
           {favoris.length > 0 ? (
             <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-8">
-              {favoris.map((bien) => (
+              {favoris.map((bien, index) => (
                 <div 
-                  key={bien.id} 
+                  key={bien.id || `favori-${index}`} 
                   className="group bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-white/5 rounded-3xl overflow-hidden hover:border-rose-300 dark:hover:border-gold-700/40 transition-all"
                 >
                   <div className="h-52 bg-zinc-100 dark:bg-zinc-800 relative flex items-center justify-center">
@@ -72,12 +70,12 @@ export default function FavorisPage() {
                       <div>
                         <p className="font-medium text-zinc-900 dark:text-white flex items-center gap-1.5">
                           <MapPin className="w-4 h-4 text-zinc-400" />
-                          {bien.ville}
+                          {bien.ville || 'Ville inconnue'}
                         </p>
                         <p className="text-2xl font-semibold text-zinc-900 dark:text-white mt-2">
                           {bien.prix ? bien.prix.toLocaleString() : '—'} €
                         </p>
-                        <p className="text-sm text-zinc-500 dark:text-zinc-400">{bien.surface}</p>
+                        <p className="text-sm text-zinc-500 dark:text-zinc-400">{bien.surface || '—'}</p>
                       </div>
                       <div className="text-right">
                         <p className="text-emerald-600 dark:text-emerald-400 font-medium">
@@ -95,7 +93,7 @@ export default function FavorisPage() {
                     </div>
 
                     <Link 
-                      href={`/opportunites/${bien.id}`}
+                      href={`/opportunites/${bien.id || ''}`}
                       className="mt-8 block w-full py-4 text-center border border-amber-600/30 dark:border-gold-700/50 hover:bg-amber-50 dark:hover:bg-gold-700/10 rounded-2xl text-sm font-medium transition-all"
                     >
                       Voir l’analyse complète
