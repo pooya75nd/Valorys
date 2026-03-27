@@ -11,8 +11,7 @@ export default function FavorisPage() {
     const saved = localStorage.getItem('favoris')
     if (saved) {
       try {
-        const parsed = JSON.parse(saved)
-        setFavoris(Array.isArray(parsed) ? parsed : [])
+        setFavoris(JSON.parse(saved))
       } catch (e) {
         console.error("Erreur chargement favoris", e)
         setFavoris([])
@@ -55,7 +54,7 @@ export default function FavorisPage() {
                     <div className="text-7xl opacity-10">🏠</div>
                     
                     <div className="absolute top-5 right-5 bg-emerald-500 text-white text-xs font-semibold px-4 py-1.5 rounded-2xl">
-                      {bien.score || 85}
+                      {bien.score || '—'}
                     </div>
 
                     <button
@@ -74,9 +73,11 @@ export default function FavorisPage() {
                           {bien.ville || 'Ville inconnue'}
                         </p>
                         <p className="text-2xl font-semibold text-zinc-900 dark:text-white mt-2">
-                          {bien.prix ? bien.prix.toLocaleString() : '—'} €
+                          {bien.prix ? Number(bien.prix).toLocaleString() : '—'} €
                         </p>
-                        <p className="text-sm text-zinc-500 dark:text-zinc-400">{bien.surface || '—'}</p>
+                        <p className="text-sm text-zinc-500 dark:text-zinc-400">
+                          {bien.surface || '—'}
+                        </p>
                       </div>
                       <div className="text-right">
                         <p className="text-emerald-600 dark:text-emerald-400 font-medium">
@@ -89,7 +90,7 @@ export default function FavorisPage() {
                     <div className="mt-6">
                       <span className="text-zinc-500 dark:text-zinc-400 text-xs">Marge MdB estimée</span>
                       <p className="text-amber-600 dark:text-gold-400 font-medium">
-                        {bien.marge ? bien.marge.toLocaleString() + ' €' : '—'}
+                        {bien.marge ? Number(bien.marge).toLocaleString() + ' €' : '—'}
                       </p>
                     </div>
 
