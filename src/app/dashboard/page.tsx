@@ -13,10 +13,18 @@ export default function DashboardPage() {
   const router = useRouter()
   const [favoris, setFavoris] = useState<number[]>([])
 
-  // Charger les favoris depuis localStorage
+  // Charger les favoris après le montage côté client uniquement
   useEffect(() => {
-    const saved = localStorage.getItem('favoris')
-    if (saved) setFavoris(JSON.parse(saved))
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('favoris')
+      if (saved) {
+        try {
+          setFavoris(JSON.parse(saved))
+        } catch (e) {
+          console.error("Erreur lecture favoris", e)
+        }
+      }
+    }
   }, [])
 
   const toggleFavori = (id: number) => {
@@ -51,7 +59,6 @@ export default function DashboardPage() {
       <main className="flex-1 lg:ml-72 pt-24 pb-20 px-6 lg:px-10">
         <div className="max-w-7xl mx-auto">
           
-          {/* En-tête */}
           <div className="flex flex-col md:flex-row md:items-end justify-between mb-12">
             <div>
               <p className="text-zinc-500 dark:text-zinc-400 text-sm font-light">Bonjour,</p>
