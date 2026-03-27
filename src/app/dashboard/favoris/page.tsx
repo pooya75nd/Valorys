@@ -11,7 +11,8 @@ export default function FavorisPage() {
     const saved = localStorage.getItem('favoris')
     if (saved) {
       try {
-        setFavoris(JSON.parse(saved))
+        const parsed = JSON.parse(saved)
+        setFavoris(Array.isArray(parsed) ? parsed : [])
       } catch (e) {
         console.error("Erreur chargement favoris", e)
         setFavoris([])
