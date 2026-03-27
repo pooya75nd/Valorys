@@ -6,19 +6,21 @@ import { useState, useEffect } from 'react'
 
 export default function FavorisPage() {
   const [favoris, setFavoris] = useState<any[]>([])
-  const [loading, setLoading] = useState(true)
+  const [isLoaded, setIsLoaded] = useState(false)
 
-  // Charger les favoris depuis localStorage
+  // Charger les favoris une seule fois après le montage
   useEffect(() => {
     try {
       const saved = localStorage.getItem('favoris')
       if (saved) {
-        setFavoris(JSON.parse(saved))
+        const parsed = JSON.parse(saved)
+        setFavoris(Array.isArray(parsed) ? parsed : [])
       }
     } catch (error) {
-      console.error("Erreur lors du chargement des favoris :", error)
+      console.error("Erreur chargement favoris:", error)
+      setFavoris([])
     } finally {
-      setLoading(false)
+      setIsLoaded(true)
     }
   }, [])
 
@@ -28,12 +30,12 @@ export default function FavorisPage() {
     localStorage.setItem('favoris', JSON.stringify(updated))
   }
 
-  if (loading) {
+  if (!isLoaded) {
     return (
       <div className="flex min-h-screen bg-zinc-50 dark:bg-ink-deep">
         <Sidebar />
         <main className="flex-1 lg:ml-72 pt-24 pb-20 px-6 lg:px-10">
-          <div className="text-zinc-500 dark:text-zinc-400">Chargement des favoris...</div>
+          <div className="text-zinc-500">Chargement des favoris...</div>
         </main>
       </div>
     )
@@ -59,16 +61,16 @@ export default function FavorisPage() {
 
           {favoris.length > 0 ? (
             <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-8">
-              {favoris.map((bien) => (
+              {favoris.map((bien, index) => (
                 <div 
-                  key={bien.id} 
+                  key={bien.id || index} 
                   className="group bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-white/5 rounded-3xl overflow-hidden hover:border-rose-300 dark:hover:border-gold-700/40 transition-all"
                 >
                   <div className="h-52 bg-zinc-100 dark:bg-zinc-800 relative flex items-center justify-center">
                     <div className="text-7xl opacity-10">🏠</div>
                     
                     <div className="absolute top-5 right-5 bg-emerald-500 text-white text-xs font-semibold px-4 py-1.5 rounded-2xl">
-                      {bien.score}
+                      {bien.score || 85}
                     </div>
 
                     <button
@@ -87,19 +89,23 @@ export default function FavorisPage() {
                           {bien.ville}
                         </p>
                         <p className="text-2xl font-semibold text-zinc-900 dark:text-white mt-2">
-                          {bien.prix.toLocaleString()} €
+                          {bien.prix ? bien.prix.toLocaleString() : '—'} €
                         </p>
                         <p className="text-sm text-zinc-500 dark:text-zinc-400">{bien.surface}</p>
                       </div>
                       <div className="text-right">
-                        <p className="text-emerald-600 dark:text-emerald-400 font-medium">{bien.rendement} %</p>
+                        <p className="text-emerald-600 dark:text-emerald-400 font-medium">
+                          {bien.rendement ? bien.rendement : '—'} %
+                        </p>
                         <p className="text-xs text-zinc-500 dark:text-zinc-400">rendement</p>
                       </div>
                     </div>
 
                     <div className="mt-6">
                       <span className="text-zinc-500 dark:text-zinc-400 text-xs">Marge MdB</span>
-                      <p className="text-amber-600 dark:text-gold-400 font-medium">{bien.marge.toLocaleString()} €</p>
+                      <p className="text-amber-600 dark:text-gold-400 font-medium">
+                        {bien.marge ? bien.marge.toLocaleString() : '—'} €
+                      </p>
                     </div>
 
                     <Link 
