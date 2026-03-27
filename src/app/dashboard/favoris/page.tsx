@@ -7,7 +7,7 @@ import { useState, useEffect } from 'react'
 export default function FavorisPage() {
   const [favoris, setFavoris] = useState<any[]>([])
 
-  // Chargement des favoris
+  // Chargement des favoris au montage
   useEffect(() => {
     const saved = localStorage.getItem('favoris')
     if (saved) {
@@ -15,7 +15,7 @@ export default function FavorisPage() {
         const parsed = JSON.parse(saved)
         setFavoris(Array.isArray(parsed) ? parsed : [])
       } catch (e) {
-        console.error("Erreur de chargement des favoris", e)
+        console.error("Erreur chargement favoris:", e)
         setFavoris([])
       }
     }
@@ -23,9 +23,9 @@ export default function FavorisPage() {
 
   // Suppression d'un favori
   const removeFavori = (id: number) => {
-    const updatedFavoris = favoris.filter((item) => item.id !== id)
-    setFavoris(updatedFavoris)
-    localStorage.setItem('favoris', JSON.stringify(updatedFavoris))
+    const updated = favoris.filter(item => item.id !== id)
+    setFavoris(updated)
+    localStorage.setItem('favoris', JSON.stringify(updated))
   }
 
   return (
@@ -50,7 +50,7 @@ export default function FavorisPage() {
             <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-8">
               {favoris.map((bien) => (
                 <div 
-                  key={`favori-${bien.id}`} 
+                  key={bien.id} 
                   className="group bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-white/5 rounded-3xl overflow-hidden hover:border-rose-300 dark:hover:border-gold-700/40 transition-all"
                 >
                   <div className="h-52 bg-zinc-100 dark:bg-zinc-800 relative flex items-center justify-center">
@@ -82,7 +82,7 @@ export default function FavorisPage() {
                       </div>
                       <div className="text-right">
                         <p className="text-emerald-600 dark:text-emerald-400 font-medium">
-                          {bien.rendement ? bien.rendement : '—'} %
+                          {bien.rendement ? bien.rendement + '%' : '—'}
                         </p>
                         <p className="text-xs text-zinc-500 dark:text-zinc-400">rendement</p>
                       </div>
@@ -91,7 +91,7 @@ export default function FavorisPage() {
                     <div className="mt-6">
                       <span className="text-zinc-500 dark:text-zinc-400 text-xs">Marge MdB estimée</span>
                       <p className="text-amber-600 dark:text-gold-400 font-medium">
-                        {bien.marge ? bien.marge.toLocaleString() : '—'} €
+                        {bien.marge ? bien.marge.toLocaleString() + ' €' : '—'}
                       </p>
                     </div>
 
