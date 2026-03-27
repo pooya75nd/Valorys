@@ -7,11 +7,13 @@ import { useState, useEffect } from 'react'
 export default function FavorisPage() {
   const [favoris, setFavoris] = useState<any[]>([])
 
+  // Chargement des favoris
   useEffect(() => {
     const saved = localStorage.getItem('favoris')
     if (saved) {
       try {
-        setFavoris(JSON.parse(saved))
+        const parsed = JSON.parse(saved)
+        setFavoris(Array.isArray(parsed) ? parsed : [])
       } catch (e) {
         console.error("Erreur de chargement des favoris", e)
         setFavoris([])
@@ -19,8 +21,9 @@ export default function FavorisPage() {
     }
   }, [])
 
-  const removeFavori = (idToRemove: number) => {
-    const updatedFavoris = favoris.filter(item => item.id !== idToRemove)
+  // Suppression d'un favori
+  const removeFavori = (id: number) => {
+    const updatedFavoris = favoris.filter((item) => item.id !== id)
     setFavoris(updatedFavoris)
     localStorage.setItem('favoris', JSON.stringify(updatedFavoris))
   }
@@ -45,9 +48,9 @@ export default function FavorisPage() {
 
           {favoris.length > 0 ? (
             <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-8">
-              {favoris.map((bien, index) => (
+              {favoris.map((bien) => (
                 <div 
-                  key={bien.id || `favori-${index}`} 
+                  key={`favori-${bien.id}`} 
                   className="group bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-white/5 rounded-3xl overflow-hidden hover:border-rose-300 dark:hover:border-gold-700/40 transition-all"
                 >
                   <div className="h-52 bg-zinc-100 dark:bg-zinc-800 relative flex items-center justify-center">
@@ -59,9 +62,9 @@ export default function FavorisPage() {
 
                     <button
                       onClick={() => removeFavori(bien.id)}
-                      className="absolute top-5 left-5 p-2.5 bg-white/90 dark:bg-black/70 rounded-full hover:bg-rose-100 dark:hover:bg-rose-900/50 transition-all"
+                      className="absolute top-5 left-5 p-3 bg-white/90 dark:bg-black/70 rounded-full hover:bg-rose-100 dark:hover:bg-rose-900/50 transition-all"
                     >
-                      <Trash2 className="w-4 h-4 text-rose-500" />
+                      <Trash2 className="w-5 h-5 text-rose-500" />
                     </button>
                   </div>
 
