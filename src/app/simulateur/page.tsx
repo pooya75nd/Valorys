@@ -42,7 +42,7 @@ export default function SimulateurPage() {
 
           <div className="grid lg:grid-cols-12 gap-12">
             
-            {/* Formulaire - Style aligné avec les Alertes */}
+            {/* Formulaire */}
             <div className="lg:col-span-7 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-white/5 rounded-3xl p-10">
               <div className="flex items-center gap-3 mb-10">
                 <Calculator className="w-6 h-6 text-amber-600 dark:text-gold-400" />
@@ -57,7 +57,7 @@ export default function SimulateurPage() {
                     value={prixAchat}
                     onChange={(e) => setPrixAchat(e.target.value === '' ? '' : Number(e.target.value))}
                     placeholder="185000"
-                    className="w-full bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-white/10 rounded-2xl px-6 py-4 text-xl font-medium focus:outline-none focus:border-amber-600 dark:focus:border-gold-600 text-zinc-900 dark:text-white"
+                    className="w-full bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-white/10 rounded-2xl px-6 py-4 text-2xl font-medium focus:outline-none focus:border-amber-600 dark:focus:border-gold-600 text-zinc-900 dark:text-white"
                   />
                 </div>
 
@@ -69,7 +69,7 @@ export default function SimulateurPage() {
                       value={loyerMensuel}
                       onChange={(e) => setLoyerMensuel(e.target.value === '' ? '' : Number(e.target.value))}
                       placeholder="980"
-                      className="w-full bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-white/10 rounded-2xl px-6 py-4 text-xl font-medium focus:outline-none focus:border-amber-600 dark:focus:border-gold-600 text-zinc-900 dark:text-white"
+                      className="w-full bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-white/10 rounded-2xl px-6 py-4 text-2xl font-medium focus:outline-none focus:border-amber-600 dark:focus:border-gold-600 text-zinc-900 dark:text-white"
                     />
                   </div>
 
@@ -80,7 +80,7 @@ export default function SimulateurPage() {
                       value={travaux}
                       onChange={(e) => setTravaux(e.target.value === '' ? '' : Number(e.target.value))}
                       placeholder="28000"
-                      className="w-full bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-white/10 rounded-2xl px-6 py-4 text-xl font-medium focus:outline-none focus:border-amber-600 dark:focus:border-gold-600 text-zinc-900 dark:text-white"
+                      className="w-full bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-white/10 rounded-2xl px-6 py-4 text-2xl font-medium focus:outline-none focus:border-amber-600 dark:focus:border-gold-600 text-zinc-900 dark:text-white"
                     />
                   </div>
                 </div>
@@ -93,7 +93,7 @@ export default function SimulateurPage() {
                       value={fraisNotaire}
                       onChange={(e) => setFraisNotaire(e.target.value === '' ? '' : Number(e.target.value))}
                       placeholder="14200"
-                      className="w-full bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-white/10 rounded-2xl px-6 py-4 text-xl font-medium focus:outline-none focus:border-amber-600 dark:focus:border-gold-600 text-zinc-900 dark:text-white"
+                      className="w-full bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-white/10 rounded-2xl px-6 py-4 text-2xl font-medium focus:outline-none focus:border-amber-600 dark:focus:border-gold-600 text-zinc-900 dark:text-white"
                     />
                   </div>
 
@@ -104,14 +104,14 @@ export default function SimulateurPage() {
                       value={chargesAnnuel}
                       onChange={(e) => setChargesAnnuel(e.target.value === '' ? '' : Number(e.target.value))}
                       placeholder="3200"
-                      className="w-full bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-white/10 rounded-2xl px-6 py-4 text-xl font-medium focus:outline-none focus:border-amber-600 dark:focus:border-gold-600 text-zinc-900 dark:text-white"
+                      className="w-full bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-white/10 rounded-2xl px-6 py-4 text-2xl font-medium focus:outline-none focus:border-amber-600 dark:focus:border-gold-600 text-zinc-900 dark:text-white"
                     />
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* Résultats */}
+            {/* Résultats - Texte réduit */}
             <div className="lg:col-span-5">
               <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-gold-700/30 rounded-3xl p-10 sticky top-28">
                 <div className="flex items-center gap-3 mb-10">
@@ -119,10 +119,10 @@ export default function SimulateurPage() {
                   <h3 className="text-amber-600 dark:text-gold-400 tracking-widest text-sm">RÉSULTATS DÉTAILLÉS</h3>
                 </div>
 
-                <div className="space-y-10">
+                <div className="space-y-9">
                   <div>
-                    <p className="text-zinc-500 dark:text-zinc-400">Rendement brut annuel</p>
-                    <p className="text-6xl font-semibold text-emerald-600 dark:text-emerald-400 mt-1">
+                    <p className="text-zinc-500 dark:text-zinc-400 text-sm">Rendement brut annuel</p>
+                    <p className="text-5xl font-semibold text-emerald-600 dark:text-emerald-400 mt-1">
                       {rendementBrut.toFixed(1)}%
                     </p>
                   </div>
@@ -130,11 +130,11 @@ export default function SimulateurPage() {
                   <div className="grid grid-cols-2 gap-10">
                     <div>
                       <p className="text-zinc-500 dark:text-zinc-400 text-sm">Rendement net estimé</p>
-                      <p className="text-4xl font-semibold text-zinc-900 dark:text-white mt-1">{rendementNet.toFixed(1)} %</p>
+                      <p className="text-3xl font-semibold text-zinc-900 dark:text-white mt-1">{rendementNet.toFixed(1)} %</p>
                     </div>
                     <div>
                       <p className="text-zinc-500 dark:text-zinc-400 text-sm">Marge MdB estimée</p>
-                      <p className="text-4xl font-semibold text-amber-600 dark:text-gold-400 mt-1">
+                      <p className="text-3xl font-semibold text-amber-600 dark:text-gold-400 mt-1">
                         {margeMdbEstimee.toLocaleString()} €
                       </p>
                     </div>
