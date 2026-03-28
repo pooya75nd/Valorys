@@ -1,18 +1,17 @@
 'use client'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { useSession } from 'next-auth/react'
+import { useSession, signOut } from 'next-auth/react'
 import { 
   LayoutDashboard, 
   Target, 
   TrendingUp, 
   Bell, 
   Heart, 
-  FileText,   // Icône pour Simulations
+  FileText,
   User, 
   LogOut 
 } from 'lucide-react'
-import { signOut } from 'next-auth/react'
 
 const navItems = [
   { href: '/dashboard', label: 'Tableau de bord', icon: LayoutDashboard },
@@ -28,10 +27,12 @@ export default function Sidebar() {
   const { data: session } = useSession()
 
   return (
-    <div className="hidden lg:flex fixed left-0 top-0 bottom-0 w-72 bg-zinc-950 border-r border-white/10 flex-col z-40">
-      
+    <div className="hidden lg:flex fixed left-0 top-0 bottom-0 w-72 flex-col z-40
+      bg-white border-r border-zinc-200
+      dark:bg-zinc-950 dark:border-white/10">
+
       {/* Logo */}
-      <div className="px-8 py-8 border-b border-white/10">
+      <div className="px-8 py-8 border-b border-zinc-200 dark:border-white/10">
         <Link href="/" className="flex items-center gap-3">
           <svg width="32" height="32" viewBox="0 0 96 96" fill="none">
             <defs>
@@ -47,7 +48,9 @@ export default function Sidebar() {
             VALORYS
           </span>
         </Link>
-        <p className="text-xs text-zinc-500 mt-1 tracking-widest">INTELLIGENCE IMMOBILIÈRE</p>
+        <p className="text-xs text-zinc-400 dark:text-zinc-500 mt-1 tracking-widest">
+          INTELLIGENCE IMMOBILIÈRE
+        </p>
       </div>
 
       {/* Navigation */}
@@ -60,12 +63,16 @@ export default function Sidebar() {
                 key={item.href}
                 href={item.href}
                 className={`flex items-center gap-3.5 px-6 py-4 rounded-2xl text-sm transition-all ${
-                  isActive 
-                    ? 'bg-gold-600/10 text-gold-400 border border-gold-600/30' 
-                    : 'text-zinc-400 hover:text-zinc-200 hover:bg-white/5'
+                  isActive
+                    ? 'bg-amber-50 text-amber-700 border border-amber-200 dark:bg-gold-600/10 dark:text-gold-400 dark:border-gold-600/30'
+                    : 'text-zinc-600 hover:text-zinc-900 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:text-zinc-200 dark:hover:bg-white/5'
                 }`}
               >
-                <item.icon className={`w-5 h-5 ${isActive ? 'text-gold-400' : 'text-zinc-500'}`} />
+                <item.icon className={`w-5 h-5 ${
+                  isActive 
+                    ? 'text-amber-600 dark:text-gold-400' 
+                    : 'text-zinc-400 dark:text-zinc-500'
+                }`} />
                 {item.label}
               </Link>
             )
@@ -74,22 +81,32 @@ export default function Sidebar() {
       </nav>
 
       {/* Profil & Déconnexion */}
-      <div className="p-6 border-t border-white/10 mt-auto">
+      <div className="p-6 border-t border-zinc-200 dark:border-white/10 mt-auto">
         {session && (
-          <div className="flex items-center gap-3 px-4 py-4 mb-4 bg-zinc-900/50 rounded-2xl">
-            <div className="w-9 h-9 bg-zinc-800 rounded-full flex items-center justify-center">
-              <User className="w-5 h-5 text-zinc-400" />
+          <div className="flex items-center gap-3 px-4 py-4 mb-4 
+            bg-zinc-100 rounded-2xl
+            dark:bg-zinc-900/50">
+            <div className="w-9 h-9 bg-zinc-200 dark:bg-zinc-800 rounded-full flex items-center justify-center">
+              {session.user?.image ? (
+                <img src={session.user.image} alt="" className="w-9 h-9 rounded-full"/>
+              ) : (
+                <User className="w-5 h-5 text-zinc-500 dark:text-zinc-400" />
+              )}
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm text-zinc-200 truncate">{session.user?.name}</p>
+              <p className="text-sm text-zinc-800 dark:text-zinc-200 truncate font-medium">
+                {session.user?.name}
+              </p>
               <p className="text-xs text-zinc-500 truncate">{session.user?.email}</p>
             </div>
           </div>
         )}
-
         <button
           onClick={() => signOut({ callbackUrl: '/login' })}
-          className="w-full flex items-center justify-center gap-3 px-6 py-3.5 text-sm text-zinc-400 hover:text-red-400 hover:bg-white/5 rounded-2xl transition-all"
+          className="w-full flex items-center justify-center gap-3 px-6 py-3.5 text-sm 
+            text-zinc-500 hover:text-red-500 hover:bg-red-50
+            dark:text-zinc-400 dark:hover:text-red-400 dark:hover:bg-white/5
+            rounded-2xl transition-all"
         >
           <LogOut className="w-4 h-4" />
           Déconnexion
