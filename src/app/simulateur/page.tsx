@@ -35,76 +35,76 @@ export default function SimulateurPage() {
               <ArrowLeft className="w-6 h-6" />
             </Link>
             <div>
-              <h1 className="font-display text-4xl text-zinc-900 dark:text-white tracking-tight">Simulateur de rentabilité</h1>
+              <h1 className="font-display text-3xl text-zinc-900 dark:text-white tracking-tight">Simulateur de rentabilité</h1>
               <p className="text-zinc-500 dark:text-zinc-400 mt-1">Calculez précisément votre projet en quelques secondes</p>
             </div>
           </div>
 
           <div className="grid lg:grid-cols-12 gap-12">
             
-            {/* Formulaire */}
+            {/* Formulaire - Style aligné avec les Alertes */}
             <div className="lg:col-span-7 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-white/5 rounded-3xl p-10">
               <div className="flex items-center gap-3 mb-10">
                 <Calculator className="w-6 h-6 text-amber-600 dark:text-gold-400" />
-                <h2 className="text-2xl font-medium text-zinc-900 dark:text-white">Détails du projet</h2>
+                <h2 className="text-xl font-medium text-zinc-900 dark:text-white">Détails du projet</h2>
               </div>
 
-              <div className="space-y-10">
+              <div className="space-y-9">
                 <div>
-                  <label className="block text-sm text-zinc-500 dark:text-zinc-400 mb-3">Prix d'achat du bien (€)</label>
+                  <label className="block text-sm text-zinc-500 dark:text-zinc-400 mb-2">Prix d'achat du bien (€)</label>
                   <input
                     type="number"
                     value={prixAchat}
                     onChange={(e) => setPrixAchat(e.target.value === '' ? '' : Number(e.target.value))}
-                    placeholder="Ex: 185000"
-                    className="w-full bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-white/10 rounded-2xl px-6 py-5 text-3xl font-medium focus:outline-none focus:border-amber-600 dark:focus:border-gold-600 text-zinc-900 dark:text-white"
+                    placeholder="185000"
+                    className="w-full bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-white/10 rounded-2xl px-6 py-4 text-xl font-medium focus:outline-none focus:border-amber-600 dark:focus:border-gold-600 text-zinc-900 dark:text-white"
                   />
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                   <div>
-                    <label className="block text-sm text-zinc-500 dark:text-zinc-400 mb-3">Loyer mensuel estimé (€)</label>
+                    <label className="block text-sm text-zinc-500 dark:text-zinc-400 mb-2">Loyer mensuel estimé (€)</label>
                     <input
                       type="number"
                       value={loyerMensuel}
                       onChange={(e) => setLoyerMensuel(e.target.value === '' ? '' : Number(e.target.value))}
-                      placeholder="Ex: 980"
-                      className="w-full bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-white/10 rounded-2xl px-6 py-5 text-3xl font-medium focus:outline-none focus:border-amber-600 dark:focus:border-gold-600 text-zinc-900 dark:text-white"
+                      placeholder="980"
+                      className="w-full bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-white/10 rounded-2xl px-6 py-4 text-xl font-medium focus:outline-none focus:border-amber-600 dark:focus:border-gold-600 text-zinc-900 dark:text-white"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm text-zinc-500 dark:text-zinc-400 mb-3">Montant des travaux (€)</label>
+                    <label className="block text-sm text-zinc-500 dark:text-zinc-400 mb-2">Montant des travaux (€)</label>
                     <input
                       type="number"
                       value={travaux}
                       onChange={(e) => setTravaux(e.target.value === '' ? '' : Number(e.target.value))}
-                      placeholder="Ex: 28000"
-                      className="w-full bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-white/10 rounded-2xl px-6 py-5 text-3xl font-medium focus:outline-none focus:border-amber-600 dark:focus:border-gold-600 text-zinc-900 dark:text-white"
+                      placeholder="28000"
+                      className="w-full bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-white/10 rounded-2xl px-6 py-4 text-xl font-medium focus:outline-none focus:border-amber-600 dark:focus:border-gold-600 text-zinc-900 dark:text-white"
                     />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                   <div>
-                    <label className="block text-sm text-zinc-500 dark:text-zinc-400 mb-3">Frais de notaire (€)</label>
+                    <label className="block text-sm text-zinc-500 dark:text-zinc-400 mb-2">Frais de notaire (€)</label>
                     <input
                       type="number"
                       value={fraisNotaire}
                       onChange={(e) => setFraisNotaire(e.target.value === '' ? '' : Number(e.target.value))}
-                      placeholder="Ex: 14200"
-                      className="w-full bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-white/10 rounded-2xl px-6 py-5 text-3xl font-medium focus:outline-none focus:border-amber-600 dark:focus:border-gold-600 text-zinc-900 dark:text-white"
+                      placeholder="14200"
+                      className="w-full bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-white/10 rounded-2xl px-6 py-4 text-xl font-medium focus:outline-none focus:border-amber-600 dark:focus:border-gold-600 text-zinc-900 dark:text-white"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm text-zinc-500 dark:text-zinc-400 mb-3">Charges annuelles (€)</label>
+                    <label className="block text-sm text-zinc-500 dark:text-zinc-400 mb-2">Charges annuelles (€)</label>
                     <input
                       type="number"
                       value={chargesAnnuel}
                       onChange={(e) => setChargesAnnuel(e.target.value === '' ? '' : Number(e.target.value))}
-                      placeholder="Ex: 3200"
-                      className="w-full bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-white/10 rounded-2xl px-6 py-5 text-3xl font-medium focus:outline-none focus:border-amber-600 dark:focus:border-gold-600 text-zinc-900 dark:text-white"
+                      placeholder="3200"
+                      className="w-full bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-white/10 rounded-2xl px-6 py-4 text-xl font-medium focus:outline-none focus:border-amber-600 dark:focus:border-gold-600 text-zinc-900 dark:text-white"
                     />
                   </div>
                 </div>
