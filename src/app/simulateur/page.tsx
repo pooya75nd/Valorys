@@ -1,7 +1,7 @@
 'use client'
 import Sidebar from '@/components/Sidebar'
 import Link from 'next/link'
-import { ArrowLeft, Calculator, TrendingUp, DollarSign } from 'lucide-react'
+import { ArrowLeft, Calculator, TrendingUp } from 'lucide-react'
 import { useState } from 'react'
 
 export default function SimulateurPage() {
@@ -39,80 +39,65 @@ export default function SimulateurPage() {
 
           <div className="grid lg:grid-cols-12 gap-12">
             
-            {/* Formulaire */}
+            {/* Formulaire - Style similaire aux alertes */}
             <div className="lg:col-span-7 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-white/5 rounded-3xl p-10">
               <div className="flex items-center gap-3 mb-10">
                 <Calculator className="w-6 h-6 text-amber-600 dark:text-gold-400" />
                 <h2 className="text-2xl font-medium text-zinc-900 dark:text-white">Détails du projet</h2>
               </div>
 
-              <div className="space-y-10">
+              <div className="space-y-8">
                 <div>
-                  <label className="block text-sm text-zinc-500 dark:text-zinc-400 mb-3">Prix d'achat du bien</label>
-                  <div className="relative">
-                    <DollarSign className="absolute left-6 top-5 w-5 h-5 text-zinc-400" />
+                  <label className="block text-sm text-zinc-500 dark:text-zinc-400 mb-3">Prix d'achat du bien (€)</label>
+                  <input
+                    type="number"
+                    value={prixAchat}
+                    onChange={(e) => setPrixAchat(Number(e.target.value))}
+                    className="w-full bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-white/10 rounded-2xl px-6 py-5 text-3xl font-medium focus:outline-none focus:border-amber-600 dark:focus:border-gold-600 text-zinc-900 dark:text-white"
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  <div>
+                    <label className="block text-sm text-zinc-500 dark:text-zinc-400 mb-3">Loyer mensuel estimé (€)</label>
                     <input
                       type="number"
-                      value={prixAchat}
-                      onChange={(e) => setPrixAchat(Number(e.target.value))}
-                      className="w-full bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-white/10 rounded-2xl px-14 py-5 text-3xl font-medium focus:outline-none focus:border-amber-600 dark:focus:border-gold-600 text-zinc-900 dark:text-white"
+                      value={loyerMensuel}
+                      onChange={(e) => setLoyerMensuel(Number(e.target.value))}
+                      className="w-full bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-white/10 rounded-2xl px-6 py-5 text-3xl font-medium focus:outline-none focus:border-amber-600 dark:focus:border-gold-600 text-zinc-900 dark:text-white"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm text-zinc-500 dark:text-zinc-400 mb-3">Montant des travaux (€)</label>
+                    <input
+                      type="number"
+                      value={travaux}
+                      onChange={(e) => setTravaux(Number(e.target.value))}
+                      className="w-full bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-white/10 rounded-2xl px-6 py-5 text-3xl font-medium focus:outline-none focus:border-amber-600 dark:focus:border-gold-600 text-zinc-900 dark:text-white"
                     />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                   <div>
-                    <label className="block text-sm text-zinc-500 dark:text-zinc-400 mb-3">Loyer mensuel estimé</label>
-                    <div className="relative">
-                      <DollarSign className="absolute left-6 top-5 w-5 h-5 text-zinc-400" />
-                      <input
-                        type="number"
-                        value={loyerMensuel}
-                        onChange={(e) => setLoyerMensuel(Number(e.target.value))}
-                        className="w-full bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-white/10 rounded-2xl px-14 py-5 text-3xl font-medium focus:outline-none focus:border-amber-600 dark:focus:border-gold-600 text-zinc-900 dark:text-white"
-                      />
-                    </div>
+                    <label className="block text-sm text-zinc-500 dark:text-zinc-400 mb-3">Frais de notaire (€)</label>
+                    <input
+                      type="number"
+                      value={fraisNotaire}
+                      onChange={(e) => setFraisNotaire(Number(e.target.value))}
+                      className="w-full bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-white/10 rounded-2xl px-6 py-5 text-3xl font-medium focus:outline-none focus:border-amber-600 dark:focus:border-gold-600 text-zinc-900 dark:text-white"
+                    />
                   </div>
 
                   <div>
-                    <label className="block text-sm text-zinc-500 dark:text-zinc-400 mb-3">Travaux estimés</label>
-                    <div className="relative">
-                      <DollarSign className="absolute left-6 top-5 w-5 h-5 text-zinc-400" />
-                      <input
-                        type="number"
-                        value={travaux}
-                        onChange={(e) => setTravaux(Number(e.target.value))}
-                        className="w-full bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-white/10 rounded-2xl px-14 py-5 text-3xl font-medium focus:outline-none focus:border-amber-600 dark:focus:border-gold-600 text-zinc-900 dark:text-white"
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                  <div>
-                    <label className="block text-sm text-zinc-500 dark:text-zinc-400 mb-3">Frais de notaire</label>
-                    <div className="relative">
-                      <DollarSign className="absolute left-6 top-5 w-5 h-5 text-zinc-400" />
-                      <input
-                        type="number"
-                        value={fraisNotaire}
-                        onChange={(e) => setFraisNotaire(Number(e.target.value))}
-                        className="w-full bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-white/10 rounded-2xl px-14 py-5 text-3xl font-medium focus:outline-none focus:border-amber-600 dark:focus:border-gold-600 text-zinc-900 dark:text-white"
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm text-zinc-500 dark:text-zinc-400 mb-3">Charges annuelles estimées</label>
-                    <div className="relative">
-                      <DollarSign className="absolute left-6 top-5 w-5 h-5 text-zinc-400" />
-                      <input
-                        type="number"
-                        value={chargesAnnuel}
-                        onChange={(e) => setChargesAnnuel(Number(e.target.value))}
-                        className="w-full bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-white/10 rounded-2xl px-14 py-5 text-3xl font-medium focus:outline-none focus:border-amber-600 dark:focus:border-gold-600 text-zinc-900 dark:text-white"
-                      />
-                    </div>
+                    <label className="block text-sm text-zinc-500 dark:text-zinc-400 mb-3">Charges annuelles (€)</label>
+                    <input
+                      type="number"
+                      value={chargesAnnuel}
+                      onChange={(e) => setChargesAnnuel(Number(e.target.value))}
+                      className="w-full bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-white/10 rounded-2xl px-6 py-5 text-3xl font-medium focus:outline-none focus:border-amber-600 dark:focus:border-gold-600 text-zinc-900 dark:text-white"
+                    />
                   </div>
                 </div>
               </div>
