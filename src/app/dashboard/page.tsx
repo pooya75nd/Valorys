@@ -8,22 +8,21 @@ import Sidebar from '@/components/Sidebar'
 import Link from 'next/link'
 import { ArrowRight, Clock, Star, Heart } from 'lucide-react'
 
+const sampleOpportunites = [
+  { id: 1, ville: "Paris 11ème", surface: "62 m²", prix: 184000, score: 91, rendement: 8.7, marge: 51000 },
+  { id: 2, ville: "Lyon 3ème", surface: "78 m²", prix: 245000, score: 87, rendement: 7.9, marge: 68000 },
+  { id: 3, ville: "Marseille 6ème", surface: "55 m²", prix: 152000, score: 94, rendement: 9.2, marge: 39000 },
+]
+
 export default function DashboardPage() {
   const { data: session, status } = useSession()
   const router = useRouter()
   const [favoris, setFavoris] = useState<number[]>([])
 
-  // Charger les favoris après le montage côté client uniquement
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('favoris')
-      if (saved) {
-        try {
-          setFavoris(JSON.parse(saved))
-        } catch (e) {
-          console.error("Erreur lecture favoris", e)
-        }
-      }
+      if (saved) setFavoris(JSON.parse(saved))
     }
   }, [])
 
@@ -84,45 +83,54 @@ export default function DashboardPage() {
           </div>
 
           <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-8">
-            {[1, 2, 3].map((i) => {
-              const isFavori = favoris.includes(i)
+            {sampleOpportunites.map((opp) => {
+              const isFavori = favoris.includes(opp.id)
               return (
                 <div 
-                  key={i} 
+                  key={opp.id} 
                   className="group bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-white/5 rounded-3xl overflow-hidden hover:border-amber-600 dark:hover:border-gold-700/40 transition-all"
                 >
                   <div className="h-52 bg-zinc-100 dark:bg-zinc-800 relative flex items-center justify-center">
                     <div className="text-7xl opacity-10">🏠</div>
                     
                     <div className="absolute top-5 right-5 bg-emerald-500 text-white text-xs font-semibold px-4 py-1.5 rounded-2xl">
-                      91
+                      {opp.score}
                     </div>
 
                     <button
-                      onClick={() => toggleFavori(i)}
-                      className="absolute top-5 left-5 p-2.5 bg-white/80 dark:bg-black/70 rounded-full hover:bg-rose-100 dark:hover:bg-rose-900/50 transition-all"
+                      onClick={() => {
+                        let newFavoris = [...favoris]
+                        if (isFavori) {
+                          newFavoris = newFavoris.filter(id => id !== opp.id)
+                        } else {
+                          newFavoris.push(opp.id)
+                        }
+                        setFavoris(newFavoris)
+                        localStorage.setItem('favoris', JSON.stringify(newFavoris))
+                      }}
+                      className="absolute top-5 left-5 p-2.5 bg-white/90 dark:bg-black/70 rounded-full hover:bg-rose-100 dark:hover:bg-rose-900/50 transition-all"
                     >
                       <Heart className={`w-5 h-5 transition-colors ${isFavori ? 'text-rose-500 fill-current' : 'text-zinc-400 dark:text-zinc-500'}`} />
                     </button>
                   </div>
 
                   <div className="p-7">
-                    <p className="font-medium text-zinc-900 dark:text-white">Paris 11ème • 62 m² • 3 pièces</p>
-                    <p className="text-3xl font-semibold text-zinc-900 dark:text-white mt-2">184 000 €</p>
+                    <p className="font-medium text-zinc-900 dark:text-white">{opp.ville} • {opp.surface}</p>
+                    <p className="text-3xl font-semibold text-zinc-900 dark:text-white mt-2">{opp.prix.toLocaleString()} €</p>
 
                     <div className="mt-6 grid grid-cols-2 gap-6 text-sm">
                       <div>
                         <span className="text-zinc-500 dark:text-zinc-400 text-xs block">Rendement net</span>
-                        <span className="text-emerald-600 dark:text-emerald-400 font-medium">8,7 %</span>
+                        <span className="text-emerald-600 dark:text-emerald-400 font-medium">{opp.rendement} %</span>
                       </div>
                       <div>
                         <span className="text-zinc-500 dark:text-zinc-400 text-xs block">Marge MdB</span>
-                        <span className="text-amber-600 dark:text-gold-400 font-medium">51 000 €</span>
+                        <span className="text-amber-600 dark:text-gold-400 font-medium">{opp.marge.toLocaleString()} €</span>
                       </div>
                     </div>
 
                     <Link 
-                      href={`/opportunites/${i}`}
+                      href={`/opportunites/${opp.id}`}
                       className="mt-8 block w-full py-4 text-center border border-amber-600/30 dark:border-gold-700/50 hover:bg-amber-50 dark:hover:bg-gold-700/10 rounded-2xl text-sm font-medium transition-all"
                     >
                       Voir l’analyse complète
