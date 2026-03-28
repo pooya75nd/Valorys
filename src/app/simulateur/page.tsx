@@ -22,6 +22,33 @@ export default function SimulateurPage() {
   const rendementNet = coutTotalAcquisition > 0 ? (revenuNetAnnuel / coutTotalAcquisition) * 100 : 0
   const margeMdbEstimee = Math.max(0, Math.round((typeof prixAchat === 'number' ? prixAchat * 0.83 : 0) - coutTotalProjet))
 
+  const saveSimulation = () => {
+    if (!prixAchat || !loyerMensuel) {
+      alert("Veuillez remplir au moins le prix d'achat et le loyer mensuel.")
+      return
+    }
+
+    const newSimulation = {
+      id: Date.now(),
+      titre: `Simulation ${new Date().toLocaleDateString('fr-FR')}`,
+      date: new Date().toLocaleDateString('fr-FR'),
+      prixAchat: prixAchat,
+      loyerMensuel: loyerMensuel,
+      travaux: travaux,
+      fraisNotaire: fraisNotaire,
+      chargesAnnuel: chargesAnnuel,
+      rendementNet: rendementNet.toFixed(1),
+      margeMdb: margeMdbEstimee
+    }
+
+    const savedSimulations = localStorage.getItem('simulations')
+    const simulations = savedSimulations ? JSON.parse(savedSimulations) : []
+    simulations.unshift(newSimulation) // Ajoute en premier
+    localStorage.setItem('simulations', JSON.stringify(simulations))
+
+    alert("Simulation sauvegardée avec succès !")
+  }
+
   return (
     <div className="flex min-h-screen bg-zinc-50 dark:bg-ink-deep">
       <Sidebar />
@@ -29,7 +56,6 @@ export default function SimulateurPage() {
       <main className="flex-1 lg:ml-72 pt-24 pb-20 px-6 lg:px-10">
         <div className="max-w-5xl mx-auto">
           
-          {/* En-tête */}
           <div className="flex items-center gap-4 mb-12">
             <Link href="/dashboard" className="text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-colors">
               <ArrowLeft className="w-6 h-6" />
@@ -111,7 +137,7 @@ export default function SimulateurPage() {
               </div>
             </div>
 
-            {/* Résultats - Texte réduit */}
+            {/* Résultats */}
             <div className="lg:col-span-5">
               <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-gold-700/30 rounded-3xl p-10 sticky top-28">
                 <div className="flex items-center gap-3 mb-10">
@@ -121,8 +147,8 @@ export default function SimulateurPage() {
 
                 <div className="space-y-9">
                   <div>
-                    <p className="text-zinc-500 dark:text-zinc-400 text-sm">Rendement brut annuel</p>
-                    <p className="text-5xl font-semibold text-emerald-600 dark:text-emerald-400 mt-1">
+                    <p className="text-zinc-500 dark:text-zinc-400">Rendement brut annuel</p>
+                    <p className="text-6xl font-semibold text-emerald-600 dark:text-emerald-400 mt-1">
                       {rendementBrut.toFixed(1)}%
                     </p>
                   </div>
@@ -130,11 +156,11 @@ export default function SimulateurPage() {
                   <div className="grid grid-cols-2 gap-10">
                     <div>
                       <p className="text-zinc-500 dark:text-zinc-400 text-sm">Rendement net estimé</p>
-                      <p className="text-3xl font-semibold text-zinc-900 dark:text-white mt-1">{rendementNet.toFixed(1)} %</p>
+                      <p className="text-4xl font-semibold text-zinc-900 dark:text-white mt-1">{rendementNet.toFixed(1)} %</p>
                     </div>
                     <div>
                       <p className="text-zinc-500 dark:text-zinc-400 text-sm">Marge MdB estimée</p>
-                      <p className="text-3xl font-semibold text-amber-600 dark:text-gold-400 mt-1">
+                      <p className="text-4xl font-semibold text-amber-600 dark:text-gold-400 mt-1">
                         {margeMdbEstimee.toLocaleString()} €
                       </p>
                     </div>
@@ -152,7 +178,10 @@ export default function SimulateurPage() {
                   </div>
                 </div>
 
-                <button className="mt-12 w-full py-5 bg-amber-600 hover:bg-amber-700 dark:bg-gold-500 dark:hover:bg-amber-300 text-white dark:text-black font-medium rounded-2xl transition-all text-lg">
+                <button 
+                  onClick={saveSimulation}
+                  className="mt-12 w-full py-5 bg-amber-600 hover:bg-amber-700 dark:bg-gold-500 dark:hover:bg-amber-300 text-white dark:text-black font-medium rounded-2xl transition-all text-lg"
+                >
                   Sauvegarder cette simulation
                 </button>
 
