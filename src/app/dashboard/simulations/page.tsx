@@ -1,7 +1,7 @@
 'use client'
 import Sidebar from '@/components/Sidebar'
 import Link from 'next/link'
-import { ArrowRight, Calendar, Trash2 } from 'lucide-react'
+import { ArrowRight, Calendar, Trash2, Calculator } from 'lucide-react'
 import { useState, useEffect } from 'react'
 
 export default function SimulationsPage() {
@@ -60,15 +60,15 @@ export default function SimulationsPage() {
                   <div className="grid grid-cols-2 gap-6 text-sm">
                     <div>
                       <span className="text-zinc-500 dark:text-zinc-400">Prix d'achat</span>
-                      <p className="font-medium text-zinc-900 dark:text-white">{sim.prixAchat.toLocaleString()} €</p>
+                      <p className="font-medium text-zinc-900 dark:text-white">{sim.prixAchat ? sim.prixAchat.toLocaleString() : '—'} €</p>
                     </div>
                     <div>
                       <span className="text-zinc-500 dark:text-zinc-400">Rendement net</span>
-                      <p className="text-emerald-600 dark:text-emerald-400 font-medium">{sim.rendementNet} %</p>
+                      <p className="text-emerald-600 dark:text-emerald-400 font-medium">{sim.rendementNet || '—'} %</p>
                     </div>
                     <div>
                       <span className="text-zinc-500 dark:text-zinc-400">Marge MdB</span>
-                      <p className="text-amber-600 dark:text-gold-400 font-medium">{sim.margeMdb.toLocaleString()} €</p>
+                      <p className="text-amber-600 dark:text-gold-400 font-medium">{sim.margeMdb ? sim.margeMdb.toLocaleString() : '—'} €</p>
                     </div>
                   </div>
 
