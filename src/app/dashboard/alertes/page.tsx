@@ -1,19 +1,19 @@
 'use client'
 import Sidebar from '@/components/Sidebar'
-import { Bell, Calendar, ArrowRight } from 'lucide-react'
-import { useState } from 'react'
+import Link from 'next/link'
+import { Bell, ArrowRight } from 'lucide-react'
 
 export default function AlertesPage() {
-  const [alertesActives, setAlertesActives] = useState([
+  const alertesActives = [
     { id: 1, titre: "Paris - Score > 85", critere: "Rendement > 7% | Budget < 300k €", active: true, dernierEnvoi: "Il y a 2h" },
     { id: 2, titre: "Lyon - Décote > 15%", critere: "Marge MdB > 40k €", active: true, dernierEnvoi: "Hier" },
-  ])
+  ]
 
-  const [historique, setHistorique] = useState([
+  const historique = [
     { id: 101, titre: "Opportunité Paris 11ème - Score 91", date: "25 mars 2026", score: 91 },
     { id: 102, titre: "Opportunité Lyon 3ème - Score 87", date: "24 mars 2026", score: 87 },
     { id: 103, titre: "Opportunité Marseille - Score 94", date: "23 mars 2026", score: 94 },
-  ])
+  ]
 
   return (
     <div className="flex min-h-screen bg-zinc-50 dark:bg-ink-deep">
