@@ -5,19 +5,22 @@ import { ArrowLeft, Calculator, TrendingUp } from 'lucide-react'
 import { useState } from 'react'
 
 export default function SimulateurPage() {
-  const [prixAchat, setPrixAchat] = useState(185000)
-  const [loyerMensuel, setLoyerMensuel] = useState(980)
-  const [travaux, setTravaux] = useState(28000)
-  const [fraisNotaire, setFraisNotaire] = useState(14200)
-  const [chargesAnnuel, setChargesAnnuel] = useState(3200)
+  const [prixAchat, setPrixAchat] = useState<number | ''>('')
+  const [loyerMensuel, setLoyerMensuel] = useState<number | ''>('')
+  const [travaux, setTravaux] = useState<number | ''>('')
+  const [fraisNotaire, setFraisNotaire] = useState<number | ''>('')
+  const [chargesAnnuel, setChargesAnnuel] = useState<number | ''>('')
 
-  const loyerAnnuel = loyerMensuel * 12
-  const rendementBrut = prixAchat > 0 ? (loyerAnnuel / prixAchat) * 100 : 0
-  const coutTotalAcquisition = prixAchat + fraisNotaire
-  const coutTotalProjet = coutTotalAcquisition + travaux
-  const revenuNetAnnuel = loyerAnnuel - chargesAnnuel
+  const loyerAnnuel = typeof loyerMensuel === 'number' ? loyerMensuel * 12 : 0
+  const rendementBrut = typeof prixAchat === 'number' && prixAchat > 0 
+    ? (loyerAnnuel / prixAchat) * 100 
+    : 0
+
+  const coutTotalAcquisition = (typeof prixAchat === 'number' ? prixAchat : 0) + (typeof fraisNotaire === 'number' ? fraisNotaire : 0)
+  const coutTotalProjet = coutTotalAcquisition + (typeof travaux === 'number' ? travaux : 0)
+  const revenuNetAnnuel = loyerAnnuel - (typeof chargesAnnuel === 'number' ? chargesAnnuel : 0)
   const rendementNet = coutTotalAcquisition > 0 ? (revenuNetAnnuel / coutTotalAcquisition) * 100 : 0
-  const margeMdbEstimee = Math.max(0, Math.round((prixAchat * 0.83) - coutTotalProjet))
+  const margeMdbEstimee = Math.max(0, Math.round((typeof prixAchat === 'number' ? prixAchat * 0.83 : 0) - coutTotalProjet))
 
   return (
     <div className="flex min-h-screen bg-zinc-50 dark:bg-ink-deep">
@@ -39,20 +42,21 @@ export default function SimulateurPage() {
 
           <div className="grid lg:grid-cols-12 gap-12">
             
-            {/* Formulaire - Style similaire aux alertes */}
+            {/* Formulaire */}
             <div className="lg:col-span-7 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-white/5 rounded-3xl p-10">
               <div className="flex items-center gap-3 mb-10">
                 <Calculator className="w-6 h-6 text-amber-600 dark:text-gold-400" />
                 <h2 className="text-2xl font-medium text-zinc-900 dark:text-white">Détails du projet</h2>
               </div>
 
-              <div className="space-y-8">
+              <div className="space-y-10">
                 <div>
                   <label className="block text-sm text-zinc-500 dark:text-zinc-400 mb-3">Prix d'achat du bien (€)</label>
                   <input
                     type="number"
                     value={prixAchat}
-                    onChange={(e) => setPrixAchat(Number(e.target.value))}
+                    onChange={(e) => setPrixAchat(e.target.value === '' ? '' : Number(e.target.value))}
+                    placeholder="Ex: 185000"
                     className="w-full bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-white/10 rounded-2xl px-6 py-5 text-3xl font-medium focus:outline-none focus:border-amber-600 dark:focus:border-gold-600 text-zinc-900 dark:text-white"
                   />
                 </div>
@@ -63,7 +67,8 @@ export default function SimulateurPage() {
                     <input
                       type="number"
                       value={loyerMensuel}
-                      onChange={(e) => setLoyerMensuel(Number(e.target.value))}
+                      onChange={(e) => setLoyerMensuel(e.target.value === '' ? '' : Number(e.target.value))}
+                      placeholder="Ex: 980"
                       className="w-full bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-white/10 rounded-2xl px-6 py-5 text-3xl font-medium focus:outline-none focus:border-amber-600 dark:focus:border-gold-600 text-zinc-900 dark:text-white"
                     />
                   </div>
@@ -73,7 +78,8 @@ export default function SimulateurPage() {
                     <input
                       type="number"
                       value={travaux}
-                      onChange={(e) => setTravaux(Number(e.target.value))}
+                      onChange={(e) => setTravaux(e.target.value === '' ? '' : Number(e.target.value))}
+                      placeholder="Ex: 28000"
                       className="w-full bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-white/10 rounded-2xl px-6 py-5 text-3xl font-medium focus:outline-none focus:border-amber-600 dark:focus:border-gold-600 text-zinc-900 dark:text-white"
                     />
                   </div>
@@ -85,7 +91,8 @@ export default function SimulateurPage() {
                     <input
                       type="number"
                       value={fraisNotaire}
-                      onChange={(e) => setFraisNotaire(Number(e.target.value))}
+                      onChange={(e) => setFraisNotaire(e.target.value === '' ? '' : Number(e.target.value))}
+                      placeholder="Ex: 14200"
                       className="w-full bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-white/10 rounded-2xl px-6 py-5 text-3xl font-medium focus:outline-none focus:border-amber-600 dark:focus:border-gold-600 text-zinc-900 dark:text-white"
                     />
                   </div>
@@ -95,7 +102,8 @@ export default function SimulateurPage() {
                     <input
                       type="number"
                       value={chargesAnnuel}
-                      onChange={(e) => setChargesAnnuel(Number(e.target.value))}
+                      onChange={(e) => setChargesAnnuel(e.target.value === '' ? '' : Number(e.target.value))}
+                      placeholder="Ex: 3200"
                       className="w-full bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-white/10 rounded-2xl px-6 py-5 text-3xl font-medium focus:outline-none focus:border-amber-600 dark:focus:border-gold-600 text-zinc-900 dark:text-white"
                     />
                   </div>
