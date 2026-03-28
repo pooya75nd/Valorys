@@ -9,9 +9,33 @@ import Link from 'next/link'
 import { ArrowRight, Clock, Star, Heart } from 'lucide-react'
 
 const sampleOpportunites = [
-  { id: 1, ville: "Paris 11ème", surface: "62 m²", prix: 184000, score: 91, rendement: 8.7, marge: 51000 },
-  { id: 2, ville: "Lyon 3ème", surface: "78 m²", prix: 245000, score: 87, rendement: 7.9, marge: 68000 },
-  { id: 3, ville: "Marseille 6ème", surface: "55 m²", prix: 152000, score: 94, rendement: 9.2, marge: 39000 },
+  { 
+    id: 1, 
+    ville: "Paris 11ème", 
+    surface: "62 m²", 
+    prix: 184000, 
+    score: 91, 
+    rendement: 8.7, 
+    marge: 51000 
+  },
+  { 
+    id: 2, 
+    ville: "Lyon 3ème", 
+    surface: "78 m²", 
+    prix: 245000, 
+    score: 87, 
+    rendement: 7.9, 
+    marge: 68000 
+  },
+  { 
+    id: 3, 
+    ville: "Marseille 6ème", 
+    surface: "55 m²", 
+    prix: 152000, 
+    score: 94, 
+    rendement: 9.2, 
+    marge: 39000 
+  },
 ]
 
 export default function DashboardPage() {
@@ -27,11 +51,11 @@ export default function DashboardPage() {
   }, [])
 
   const toggleFavori = (id: number) => {
-    let newFavoris: number[]
-    if (favoris.includes(id)) {
-      newFavoris = favoris.filter(f => f !== id)
+    let newFavoris = [...favoris]
+    if (newFavoris.includes(id)) {
+      newFavoris = newFavoris.filter(f => f !== id)
     } else {
-      newFavoris = [...favoris, id]
+      newFavoris.push(id)
     }
     setFavoris(newFavoris)
     localStorage.setItem('favoris', JSON.stringify(newFavoris))
@@ -98,16 +122,7 @@ export default function DashboardPage() {
                     </div>
 
                     <button
-                      onClick={() => {
-                        let newFavoris = [...favoris]
-                        if (isFavori) {
-                          newFavoris = newFavoris.filter(id => id !== opp.id)
-                        } else {
-                          newFavoris.push(opp.id)
-                        }
-                        setFavoris(newFavoris)
-                        localStorage.setItem('favoris', JSON.stringify(newFavoris))
-                      }}
+                      onClick={() => toggleFavori(opp.id)}
                       className="absolute top-5 left-5 p-2.5 bg-white/90 dark:bg-black/70 rounded-full hover:bg-rose-100 dark:hover:bg-rose-900/50 transition-all"
                     >
                       <Heart className={`w-5 h-5 transition-colors ${isFavori ? 'text-rose-500 fill-current' : 'text-zinc-400 dark:text-zinc-500'}`} />
