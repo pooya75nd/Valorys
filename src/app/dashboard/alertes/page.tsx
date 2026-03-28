@@ -25,32 +25,23 @@ export default function AlertesPage() {
     villes: "",
     budgetMax: "",
     rendementMin: "",
-    scoreMin: "80",
+    scoreMin: "85",
     decoteMin: "",
-    typeOperation: "mdB", // mdB ou location
   })
 
   const createAlerte = () => {
-    if (!newAlerte.titre) return
+    if (!newAlerte.titre.trim()) return
 
     const nouvelleAlerte = {
       id: Date.now(),
-      titre: newAlerte.titre,
-      critere: `Villes: ${newAlerte.villes || 'Toutes'} | Budget < ${newAlerte.budgetMax || '—'} € | Rendement > ${newAlerte.rendementMin || '—'}% | Score > ${newAlerte.scoreMin}`,
+      titre: newAlerte.titre.trim(),
+      critere: `Villes: ${newAlerte.villes || 'Toutes'} | Budget < ${newAlerte.budgetMax || '—'} € | Rendement > ${newAlerte.rendementMin || '—'}% | Score > ${newAlerte.scoreMin} | Décote > ${newAlerte.decoteMin || '—'}%`,
       active: true,
       dernierEnvoi: "À l'instant"
     }
 
     setAlertesActives([nouvelleAlerte, ...alertesActives])
-    setNewAlerte({
-      titre: "",
-      villes: "",
-      budgetMax: "",
-      rendementMin: "",
-      scoreMin: "80",
-      decoteMin: "",
-      typeOperation: "mdB",
-    })
+    setNewAlerte({ titre: "", villes: "", budgetMax: "", rendementMin: "", scoreMin: "85", decoteMin: "" })
     setShowCreateForm(false)
   }
 
@@ -81,7 +72,7 @@ export default function AlertesPage() {
             </button>
           </div>
 
-          {/* Formulaire de création complet */}
+          {/* Formulaire de création */}
           {showCreateForm && (
             <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-white/5 rounded-3xl p-10 mb-12">
               <h3 className="text-xl font-medium mb-8 text-zinc-900 dark:text-white">Créer une nouvelle alerte</h3>
@@ -99,7 +90,7 @@ export default function AlertesPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm text-zinc-500 dark:text-zinc-400 mb-2">Villes / Départements</label>
+                  <label className="block text-sm text-zinc-500 dark:text-zinc-400 mb-2">Villes ou départements</label>
                   <input
                     type="text"
                     value={newAlerte.villes}
@@ -137,7 +128,7 @@ export default function AlertesPage() {
                     type="number"
                     value={newAlerte.scoreMin}
                     onChange={(e) => setNewAlerte({...newAlerte, scoreMin: e.target.value})}
-                    placeholder="80"
+                    placeholder="85"
                     className="w-full bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-white/10 rounded-2xl px-6 py-4 focus:outline-none focus:border-amber-600 dark:focus:border-gold-600"
                   />
                 </div>
@@ -154,7 +145,7 @@ export default function AlertesPage() {
                 </div>
               </div>
 
-              <div className="mt-8 flex gap-4">
+              <div className="mt-10 flex gap-4">
                 <button 
                   onClick={createAlerte}
                   className="flex-1 py-4 bg-amber-600 hover:bg-amber-700 dark:bg-gold-500 dark:hover:bg-amber-300 text-white dark:text-black font-medium rounded-2xl transition-all"
@@ -162,7 +153,10 @@ export default function AlertesPage() {
                   Créer l'alerte
                 </button>
                 <button 
-                  onClick={() => setShowCreateForm(false)}
+                  onClick={() => {
+                    setShowCreateForm(false)
+                    setNewAlerte({ titre: "", villes: "", budgetMax: "", rendementMin: "", scoreMin: "85", decoteMin: "" })
+                  }}
                   className="flex-1 py-4 border border-zinc-300 dark:border-white/10 hover:bg-zinc-100 dark:hover:bg-white/5 rounded-2xl transition-all"
                 >
                   Annuler
@@ -188,7 +182,7 @@ export default function AlertesPage() {
                   </div>
                   <button 
                     onClick={() => deleteAlerte(alerte.id)}
-                    className="text-zinc-400 hover:text-rose-500 transition-colors"
+                    className="text-zinc-400 hover:text-rose-500 transition-colors p-2"
                   >
                     <Trash2 className="w-5 h-5" />
                   </button>
