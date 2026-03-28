@@ -19,14 +19,15 @@ export default function FavorisPage() {
       try {
         setFavorisIds(JSON.parse(saved))
       } catch (e) {
+        console.error("Erreur chargement favoris", e)
         setFavorisIds([])
       }
     }
   }, [])
 
-  const favorisData = favorisIds.map(id => 
-    sampleOpportunites.find(opp => opp.id === id)
-  ).filter(Boolean)
+  const favorisData = favorisIds
+    .map(id => sampleOpportunites.find(opp => opp.id === id))
+    .filter((bien): bien is NonNullable<typeof bien> => bien !== undefined)
 
   const removeFavori = (id: number) => {
     const updated = favorisIds.filter(f => f !== id)
@@ -54,7 +55,7 @@ export default function FavorisPage() {
 
           {favorisData.length > 0 ? (
             <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-8">
-              {favorisData.map((bien, index) => (
+              {favorisData.map((bien) => (
                 <div 
                   key={bien.id} 
                   className="group bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-white/5 rounded-3xl overflow-hidden hover:border-rose-300 dark:hover:border-gold-700/40 transition-all"
