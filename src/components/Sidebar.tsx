@@ -8,6 +8,7 @@ import {
   TrendingUp, 
   Bell, 
   Heart, 
+  FileText,   // Icône pour Simulations
   User, 
   LogOut 
 } from 'lucide-react'
@@ -17,6 +18,7 @@ const navItems = [
   { href: '/dashboard', label: 'Tableau de bord', icon: LayoutDashboard },
   { href: '/opportunites', label: 'Opportunités', icon: Target },
   { href: '/simulateur', label: 'Simulateur', icon: TrendingUp },
+  { href: '/dashboard/simulations', label: 'Mes Simulations', icon: FileText },
   { href: '/dashboard/alertes', label: 'Mes alertes', icon: Bell },
   { href: '/dashboard/favoris', label: 'Favoris', icon: Heart },
 ]
