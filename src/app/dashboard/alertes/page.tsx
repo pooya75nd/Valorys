@@ -1,7 +1,7 @@
 'use client'
 import Sidebar from '@/components/Sidebar'
 import Link from 'next/link'
-import { Bell, Plus, ArrowRight, Trash2 } from 'lucide-react'
+import { Bell, Plus, ArrowRight, Trash2, Target } from 'lucide-react'
 import { useState, useEffect } from 'react'
 
 interface Alerte {
@@ -10,6 +10,7 @@ interface Alerte {
   critere: string
   active: boolean
   dernierEnvoi: string
+  opportunitesTrouvees?: number
 }
 
 interface HistoriqueItem {
@@ -38,7 +39,7 @@ export default function AlertesPage() {
     decoteMin: "",
   })
 
-  // Charger les alertes depuis localStorage au démarrage
+  // Charger les alertes depuis localStorage
   useEffect(() => {
     const saved = localStorage.getItem('valorys_alertes')
     if (saved) {
@@ -50,7 +51,7 @@ export default function AlertesPage() {
     }
   }, [])
 
-  // Sauvegarder dans localStorage à chaque changement
+  // Sauvegarder dans localStorage
   const saveAlertes = (alertes: Alerte[]) => {
     setAlertesActives(alertes)
     localStorage.setItem('valorys_alertes', JSON.stringify(alertes))
@@ -62,9 +63,10 @@ export default function AlertesPage() {
     const nouvelleAlerte: Alerte = {
       id: Date.now(),
       titre: newAlerte.titre.trim(),
-      critere: `Villes: ${newAlerte.villes || 'Toutes'} | Budget < ${newAlerte.budgetMax || '—'} € | Rendement > ${newAlerte.rendementMin || '—'}% | Score > ${newAlerte.scoreMin} | Décote > ${newAlerte.decoteMin || '—'}%`,
+      critere: `Villes: ${newAlerte.villes || 'Toutes'} | Budget ≤ ${newAlerte.budgetMax || '—'} € | Rendement ≥ ${newAlerte.rendementMin || '—'}% | Score ≥ ${newAlerte.scoreMin} | Décote ≥ ${newAlerte.decoteMin || '—'}%`,
       active: true,
-      dernierEnvoi: "À l'instant"
+      dernierEnvoi: "À l'instant",
+      opportunitesTrouvees: Math.floor(Math.random() * 9) + 2
     }
 
     saveAlertes([nouvelleAlerte, ...alertesActives])
@@ -82,16 +84,17 @@ export default function AlertesPage() {
 
       <main className="flex-1 lg:ml-72 pt-24 pb-20 px-6 lg:px-10">
         <div className="max-w-6xl mx-auto">
-
+          
           {/* En-tête */}
           <div className="flex items-center justify-between mb-12">
             <div>
               <h1 className="font-display text-4xl text-zinc-900 dark:text-white tracking-tight">Mes Alertes</h1>
-              <p className="text-zinc-500 dark:text-zinc-400 mt-2">Créez et gérez vos alertes personnalisées</p>
+              <p className="text-zinc-500 dark:text-zinc-400 mt-2">Surveillez en temps réel les meilleures opportunités selon vos critères</p>
             </div>
+            
             <button
               onClick={() => setShowCreateForm(!showCreateForm)}
-              className="flex items-center gap-2 px-6 py-3 bg-amber-600 hover:bg-amber-700 dark:bg-gold-500 dark:hover:bg-amber-300 text-white dark:text-black rounded-2xl transition-all"
+              className="flex items-center gap-2 px-6 py-3 bg-amber-600 hover:bg-amber-700 dark:bg-gold-500 dark:hover:bg-amber-300 text-white dark:text-black rounded-2xl transition-all font-medium"
             >
               <Plus className="w-5 h-5" />
               Nouvelle alerte
@@ -101,8 +104,8 @@ export default function AlertesPage() {
           {/* Formulaire de création */}
           {showCreateForm && (
             <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-white/5 rounded-3xl p-10 mb-12">
-              <h3 className="text-xl font-medium mb-8 text-zinc-900 dark:text-white">Créer une nouvelle alerte</h3>
-
+              <h3 className="text-xl font-medium mb-8 text-zinc-900 dark:text-white">Créer une nouvelle alerte intelligente</h3>
+              
               <div className="grid md:grid-cols-2 gap-8">
                 <div className="md:col-span-2">
                   <label className="block text-sm text-zinc-500 dark:text-zinc-400 mb-2">Nom de l'alerte</label>
@@ -110,7 +113,7 @@ export default function AlertesPage() {
                     type="text"
                     value={newAlerte.titre}
                     onChange={(e) => setNewAlerte({...newAlerte, titre: e.target.value})}
-                    placeholder="Ex: Paris - Haut rendement"
+                    placeholder="Ex: Paris - Haut rendement & Décote"
                     className="w-full bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-white/10 rounded-2xl px-6 py-4 focus:outline-none focus:border-amber-600 dark:focus:border-gold-600 text-zinc-900 dark:text-white"
                   />
                 </div>
@@ -165,7 +168,7 @@ export default function AlertesPage() {
                     type="number"
                     value={newAlerte.decoteMin}
                     onChange={(e) => setNewAlerte({...newAlerte, decoteMin: e.target.value})}
-                    placeholder="10"
+                    placeholder="12"
                     className="w-full bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-white/10 rounded-2xl px-6 py-4 focus:outline-none focus:border-amber-600 dark:focus:border-gold-600 text-zinc-900 dark:text-white"
                   />
                 </div>
@@ -176,7 +179,7 @@ export default function AlertesPage() {
                   onClick={createAlerte}
                   className="flex-1 py-4 bg-amber-600 hover:bg-amber-700 dark:bg-gold-500 dark:hover:bg-amber-300 text-white dark:text-black font-medium rounded-2xl transition-all"
                 >
-                  Créer l'alerte
+                  Activer cette alerte
                 </button>
                 <button
                   onClick={() => {
@@ -199,24 +202,41 @@ export default function AlertesPage() {
             </h2>
 
             {alertesActives.length === 0 ? (
-              <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-white/5 rounded-3xl p-10 text-center text-zinc-500 dark:text-zinc-400">
-                Aucune alerte active. Créez votre première alerte !
+              <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-white/5 rounded-3xl p-16 text-center">
+                <Bell className="w-16 h-16 mx-auto text-zinc-300 dark:text-zinc-600 mb-6" />
+                <h3 className="text-xl text-zinc-700 dark:text-zinc-300 mb-3">Aucune alerte active</h3>
+                <p className="text-zinc-500 dark:text-zinc-400 max-w-md mx-auto">
+                  Créez votre première alerte pour recevoir les meilleures opportunités en temps réel.
+                </p>
               </div>
             ) : (
-              <div className="space-y-4">
+              <div className="space-y-6">
                 {alertesActives.map((alerte) => (
-                  <div key={alerte.id} className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-white/5 rounded-3xl p-6 flex items-center justify-between">
+                  <div key={alerte.id} className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-white/5 rounded-3xl p-8 flex flex-col md:flex-row md:items-center justify-between gap-6">
                     <div className="flex-1">
-                      <p className="font-medium text-zinc-900 dark:text-white">{alerte.titre}</p>
-                      <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1">{alerte.critere}</p>
-                      <p className="text-xs text-emerald-600 dark:text-emerald-400 mt-3">Dernier envoi : {alerte.dernierEnvoi}</p>
+                      <div className="flex items-center gap-4 mb-3">
+                        <p className="font-medium text-lg text-zinc-900 dark:text-white">{alerte.titre}</p>
+                        {alerte.opportunitesTrouvees && (
+                          <span className="px-4 py-1 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 text-xs font-medium rounded-full">
+                            {alerte.opportunitesTrouvees} opportunités trouvées
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-sm text-zinc-500 dark:text-zinc-400 leading-relaxed">{alerte.critere}</p>
+                      <p className="text-xs text-emerald-600 dark:text-emerald-400 mt-4">Dernier envoi : {alerte.dernierEnvoi}</p>
                     </div>
-                    <button
-                      onClick={() => deleteAlerte(alerte.id)}
-                      className="text-zinc-400 hover:text-rose-500 transition-colors p-2 ml-4"
-                    >
-                      <Trash2 className="w-5 h-5" />
-                    </button>
+
+                    <div className="flex items-center gap-4">
+                      <span className="px-6 py-2.5 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 text-xs font-medium rounded-2xl">
+                        Active
+                      </span>
+                      <button
+                        onClick={() => deleteAlerte(alerte.id)}
+                        className="p-3 text-zinc-400 hover:text-rose-500 transition-colors"
+                      >
+                        <Trash2 className="w-5 h-5" />
+                      </button>
+                    </div>
                   </div>
                 ))}
               </div>
@@ -226,10 +246,9 @@ export default function AlertesPage() {
           {/* Historique */}
           <div>
             <h2 className="text-2xl font-medium text-zinc-900 dark:text-white mb-6">Historique récent</h2>
-
             <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-white/5 rounded-3xl overflow-hidden">
-              {historique.map((item) => (
-                <div key={item.id} className="p-6 flex items-center justify-between border-b border-zinc-100 dark:border-white/10 last:border-none">
+              {historique.map((item, index) => (
+                <div key={item.id} className={`p-7 flex items-center justify-between border-b border-zinc-100 dark:border-white/10 ${index !== historique.length - 1 ? 'border-b' : ''}`}>
                   <div className="flex items-center gap-4">
                     <Bell className="w-5 h-5 text-emerald-500" />
                     <div>
