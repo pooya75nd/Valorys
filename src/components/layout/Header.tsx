@@ -3,14 +3,14 @@ import Link from 'next/link'
 import { useSession, signOut } from 'next-auth/react'
 import { useState, useEffect } from 'react'
 import { usePathname } from 'next/navigation'
-import { Menu, X, ChevronDown, LogOut, LayoutDashboard, Bell, Heart, Sun, Moon } from 'lucide-react'
+import { Menu, X, ChevronDown, LogOut, User, Settings, Sun, Moon } from 'lucide-react'
 
 export function Header() {
   const { data: session } = useSession()
   const pathname = usePathname()
   const [mobileOpen, setMobileOpen] = useState(false)
   const [userMenuOpen, setUserMenuOpen] = useState(false)
-  const [isDark, setIsDark] = useState(true) // Par défaut sombre
+  const [isDark, setIsDark] = useState(true)
 
   // Gestion du thème
   useEffect(() => {
@@ -27,7 +27,7 @@ export function Header() {
   const toggleTheme = () => {
     const newIsDark = !isDark
     setIsDark(newIsDark)
-    
+   
     if (newIsDark) {
       document.documentElement.classList.add('dark')
       localStorage.setItem('theme', 'dark')
@@ -46,14 +46,13 @@ export function Header() {
 
   const plan = session?.user?.plan ?? 'DECOUVERTE'
   const badge = planBadge[plan]
-
   const isPublicPage = pathname === '/pricing' || pathname === '/login'
   const showPricingLink = !isPublicPage || !!session
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 border-b border-white/5 bg-ink-deep/90 backdrop-blur-md dark:bg-zinc-950/90">
       <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-        
+       
         {/* Logo */}
         <Link href="/" className="flex items-center gap-3 group">
           <svg width="36" height="36" viewBox="0 0 96 96" fill="none">
@@ -72,16 +71,12 @@ export function Header() {
           </span>
         </Link>
 
-        {/* Navigation Desktop */}
+        {/* Navigation Desktop - Vide quand connecté (tout est dans la sidebar) */}
         <nav className="hidden md:flex items-center gap-8 text-sm font-light tracking-wide">
-          {session ? (
-            <></>
-          ) : (
-            showPricingLink && (
-              <Link href="/pricing" className="text-zinc-400 hover:text-gold-400 transition-colors">
-                Tarifs
-              </Link>
-            )
+          {!session && showPricingLink && (
+            <Link href="/pricing" className="text-zinc-400 hover:text-gold-400 transition-colors">
+              Tarifs
+            </Link>
           )}
         </nav>
 
@@ -105,21 +100,27 @@ export function Header() {
                 <ChevronDown className="w-3 h-3 text-zinc-500" />
               </button>
 
+              {/* Menu Profil */}
               {userMenuOpen && (
-                <div className="absolute right-0 top-full mt-2 w-52 bg-zinc-900 border border-white/10 rounded-xl shadow-2xl overflow-hidden z-50">
-                  <Link href="/dashboard" onClick={() => setUserMenuOpen(false)} className="flex items-center gap-3 px-4 py-3 text-sm text-zinc-300 hover:bg-white/5 hover:text-gold-400 transition-colors">
-                    <LayoutDashboard className="w-4 h-4" /> Dashboard
+                <div className="absolute right-0 top-full mt-2 w-64 bg-zinc-900 border border-white/10 rounded-2xl shadow-2xl overflow-hidden z-50 py-2">
+                  <Link 
+                    href="/dashboard/profil" 
+                    onClick={() => setUserMenuOpen(false)} 
+                    className="flex items-center gap-3 px-5 py-3.5 text-sm text-zinc-300 hover:bg-white/5 hover:text-gold-400 transition-colors"
+                  >
+                    <User className="w-4 h-4" /> Mon Profil
                   </Link>
-                  <Link href="/dashboard/alertes" onClick={() => setUserMenuOpen(false)} className="flex items-center gap-3 px-4 py-3 text-sm text-zinc-300 hover:bg-white/5 hover:text-gold-400 transition-colors">
-                    <Bell className="w-4 h-4" /> Mes alertes
+                  <Link 
+                    href="/dashboard/profil?tab=reglages" 
+                    onClick={() => setUserMenuOpen(false)} 
+                    className="flex items-center gap-3 px-5 py-3.5 text-sm text-zinc-300 hover:bg-white/5 hover:text-gold-400 transition-colors"
+                  >
+                    <Settings className="w-4 h-4" /> Réglages
                   </Link>
-                  <Link href="/dashboard/favoris" onClick={() => setUserMenuOpen(false)} className="flex items-center gap-3 px-4 py-3 text-sm text-zinc-300 hover:bg-white/5 hover:text-gold-400 transition-colors">
-                    <Heart className="w-4 h-4" /> Favoris
-                  </Link>
-                  <div className="border-t border-white/5 mt-1" />
-                  <button 
-                    onClick={() => signOut()}
-                    className="flex items-center gap-3 px-4 py-3 text-sm text-zinc-500 hover:bg-white/5 hover:text-red-400 transition-colors w-full text-left"
+                  <div className="border-t border-white/10 my-2 mx-2" />
+                  <button
+                    onClick={() => signOut({ callbackUrl: '/login' })}
+                    className="flex items-center gap-3 px-5 py-3.5 text-sm text-zinc-400 hover:bg-white/5 hover:text-red-400 transition-colors w-full text-left"
                   >
                     <LogOut className="w-4 h-4" /> Déconnexion
                   </button>
@@ -136,8 +137,8 @@ export function Header() {
               <Link href="/login" className="text-sm text-zinc-400 hover:text-zinc-200 transition-colors px-4 py-2">
                 Connexion
               </Link>
-              <Link 
-                href="/login" 
+              <Link
+                href="/login"
                 className="text-sm px-6 py-2.5 bg-gold-700/20 border border-gold-700/40 text-gold-400 rounded-lg hover:bg-gold-700/30 transition-all"
               >
                 Commencer gratuitement
@@ -156,8 +157,8 @@ export function Header() {
         </div>
 
         {/* Bouton menu mobile */}
-        <button 
-          className="md:hidden text-zinc-400" 
+        <button
+          className="md:hidden text-zinc-400"
           onClick={() => setMobileOpen(!mobileOpen)}
         >
           {mobileOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
@@ -167,23 +168,14 @@ export function Header() {
       {/* Menu Mobile */}
       {mobileOpen && (
         <div className="md:hidden border-t border-white/5 bg-ink-deep px-6 py-6 flex flex-col gap-5 text-sm">
-          {session ? (
-            <>
-              <Link href="/dashboard" onClick={() => setMobileOpen(false)} className="text-zinc-400 hover:text-gold-400">Dashboard</Link>
-              <Link href="/dashboard/alertes" onClick={() => setMobileOpen(false)} className="text-zinc-400 hover:text-gold-400">Mes alertes</Link>
-              <Link href="/dashboard/favoris" onClick={() => setMobileOpen(false)} className="text-zinc-400 hover:text-gold-400">Favoris</Link>
-            </>
-          ) : (
-            showPricingLink && (
-              <Link href="/pricing" onClick={() => setMobileOpen(false)} className="text-zinc-400 hover:text-gold-400">
-                Tarifs
-              </Link>
-            )
+          {!session && showPricingLink && (
+            <Link href="/pricing" onClick={() => setMobileOpen(false)} className="text-zinc-400 hover:text-gold-400">
+              Tarifs
+            </Link>
           )}
-
           {!session && (
-            <Link 
-              href="/login" 
+            <Link
+              href="/login"
               onClick={() => setMobileOpen(false)}
               className="mt-3 text-center py-3 px-6 bg-gold-700/20 border border-gold-700/40 text-gold-400 rounded-lg"
             >
